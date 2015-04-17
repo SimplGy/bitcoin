@@ -1,0 +1,38 @@
+{
+  "name": "bitcoin-visualizer",
+  "version": "0.1.0",
+  "description": "A real-time visualizer for the bitcoin blockchain",
+  "repository": "https://github.com/SimplGy/bitcoin-visualizer.git",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist/*",
+
+    "build:html": "cp app/*.html dist",
+    "build:js": "browserify app/**.js > dist/all.js",
+    "build:css": "find app -name '*.css' -exec cat {} \\; > dist/all.css",
+    "build": "npm run build:html && npm run build:js && npm run build:css",
+
+    "watch": "nodemon -q -w app/ --ext '.' --exec 'npm run build'",
+    "live-reload": "live-reload --port 9091 -i 300 dist/",
+    "serve": "http-server -p 9090 dist/",
+    "open": "opener http://localhost:9090",
+
+    "dev": "npm run open -s & parallelshell 'npm run live-reload -s' 'npm run serve -s' 'npm run watch -s'"
+  },
+  "keywords": [
+    "bitcoin",
+    "blockchain",
+    "datavis"
+  ],
+  "author": "@simplgy",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "latest",
+    "http-server": "latest",
+    "live-reload": "^1.1.0",
+    "nodemon": "latest",
+    "opener": "latest",
+    "parallelshell": "latest",
+    "rimraf": "latest"
+  }
+}

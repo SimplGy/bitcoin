@@ -1,0 +1,17 @@
+{
+  "name": "bitcoin-visualizer",
+  "version": "0.1.0",
+  "authors": [
+    "@simplgy"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "d3": "~3.5.5"
+  }
+}
