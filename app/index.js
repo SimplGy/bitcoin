@@ -1,7 +1,12 @@
-var Block, blocks;
+(function() {
+  var blockDisplay;
 
-Block = require('./common/models/block');
+  blockDisplay = require('pages/block-display/block-display');
 
-console.log('index');
+  if (document.readyState !== 'loading') {
+    blockDisplay.init();
+  } else {
+    document.addEventListener('DOMContentLoaded', blockDisplay.init);
+  }
 
-blocks = [new Block(), new Block(), new Block()];
+}).call(this);

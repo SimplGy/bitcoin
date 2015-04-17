@@ -1,9 +1,6 @@
-Block = require './common/models/block'
+blockDisplay = require 'pages/block-display/block-display'
 
-console.log 'index'
-
-blocks = [
-  new Block()
-  new Block()
-  new Block()
-]
+if document.readyState != 'loading'
+  blockDisplay.init()
+else
+  document.addEventListener 'DOMContentLoaded', blockDisplay.init
