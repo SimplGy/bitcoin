@@ -1,5 +1,6 @@
 gulp        = require 'gulp'
 browserify  = require 'browserify'
+source      = require('vinyl-source-stream');
 
 task = ->
   browserify('./app/index.js')
