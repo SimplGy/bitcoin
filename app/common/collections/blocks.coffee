@@ -1,13 +1,13 @@
 config = require 'config'
 _ = require 'lodash'
-pageLimit = 5 # Should bump this up but don't want to wear out my welcome on the free API
-pageSizeLimit = 200
-pollInterval = 1000 * 10
+pageLimit = 20 # Should bump this up but don't want to wear out my welcome on the free API
+#pageSizeLimit = 200
+pollInterval = 1000 * 20
 
 Blocks = () ->
   console.log 'block collection instantiated, fetching initial data'
   @curPage = 1
-  @pageSize = 50
+  @pageSize = 100
   @getHistorical(null, @pollForLatest.bind @)
 
 Blocks.prototype = new Array()
@@ -51,7 +51,8 @@ Blocks.prototype.gotHistorical = (resp) ->
   Array.prototype.push.apply @, resp.data # add the new data to this array
   @onChangeCall()
   @curPage++
-  @pageSize *= 2 unless @pageSize >= pageSizeLimit
+#  @pageSize *= 2 # Can't change the page size because then there will be overlaps. The API doesn't provide an offset option.
+#  if @pageSize > pageSizeLimit then @pageSize = pageSizeLimit
   return if @curPage > pageLimit
   @getHistorical()
 

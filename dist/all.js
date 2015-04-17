@@ -14,22 +14,20 @@
 
 },{"pages/block-display/block-display":4}],2:[function(require,module,exports){
 (function() {
-  var Blocks, config, pageLimit, pageSizeLimit, pollInterval, _;
+  var Blocks, config, pageLimit, pollInterval, _;
 
   config = require('config');
 
   _ = require('lodash');
 
-  pageLimit = 5;
+  pageLimit = 20;
 
-  pageSizeLimit = 200;
-
-  pollInterval = 1000 * 10;
+  pollInterval = 1000 * 20;
 
   Blocks = function() {
     console.log('block collection instantiated, fetching initial data');
     this.curPage = 1;
-    this.pageSize = 50;
+    this.pageSize = 100;
     return this.getHistorical(null, this.pollForLatest.bind(this));
   };
 
@@ -86,9 +84,6 @@
     Array.prototype.push.apply(this, resp.data);
     this.onChangeCall();
     this.curPage++;
-    if (!(this.pageSize >= pageSizeLimit)) {
-      this.pageSize *= 2;
-    }
     if (this.curPage > pageLimit) {
       return;
     }
