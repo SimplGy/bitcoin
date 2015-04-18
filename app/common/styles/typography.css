@@ -1,12 +1,26 @@
 body {
   font-family: "helvetica neue", "Helvetica", sans-serif;
-  color: #333; }
+  color: #323232; }
 
 .muted {
-  color: #999; }
+  color: #666666; }
+
+.veryMuted {
+  color: #999999; }
+
+h1, h2, h3, h4, h5 {
+  font-weight: normal;
+  margin: 0; }
 
 h1 {
-  font-size: 50px; }
-
-h2 {
-  font-size: 30px; }
+  font-size: 15px;
+  line-height: 2;
+  padding-right: 15px;
+  text-align: right;
+  background: #323232;
+  margin-bottom: 1px; }
+  h1 a {
+    color: #666666;
+    text-decoration: none; }
+  h1 a:hover {
+    text-decoration: underline; }

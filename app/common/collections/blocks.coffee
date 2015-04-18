@@ -56,7 +56,7 @@ Blocks.prototype.gotHistorical = (resp) ->
   return if @curPage > pageLimit
   @getHistorical()
 
-Blocks.prototype.gotErr = (req) ->  console.warn 'error response from server on collection/blocks', err
+Blocks.prototype.gotErr = (req) ->  console.warn 'error response from server on collection/blocks', req
 Blocks.prototype.conErr = ->        console.warn 'error setting up xhr request on collection/blocks', arguments
 
 # Insert it, but not if that block already exists

@@ -76,7 +76,7 @@
   };
 
   Blocks.prototype.gotErr = function(req) {
-    return console.warn('error response from server on collection/blocks', err);
+    return console.warn('error response from server on collection/blocks', req);
   };
 
   Blocks.prototype.conErr = function() {

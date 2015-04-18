@@ -1,0 +1,25 @@
+.block-display {
+  position: relative;
+  font-size: 0; }
+  .block-display b {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 1px white;
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 45px;
+    color: rgba(255, 255, 255, 0.2);
+    text-align: right;
+    padding-right: 3px;
+    overflow: hidden;
+    cursor: pointer; }
+  .block-display b.pending {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 3px dotted rgba(0, 0, 0, 0.4); }
+  .block-display b:hover {
+    background-color: #d8d8d8 !important;
+    color: #666666;
+    box-shadow: inset 0 0 1px #323232; }

@@ -1,12 +1,30 @@
+@import '__'
 
 body
   font-family: "helvetica neue", "Helvetica", sans-serif
-  color: #333
+  color: $black80
 
 .muted
-  color: #999
+  color: $muted
+.veryMuted
+  color: $veryMuted
 
+
+h1, h2, h3, h4, h5
+  font-weight: normal
+  margin: 0
+
+// Only used for the app title
 h1
-  font-size: 50px
-h2
-  font-size: 30px
+  font-size: 15px
+  line-height: 2
+  padding-right: 15px
+  text-align: right
+  background: $black80
+  margin-bottom: 1px
+  a
+    color: $white40
+    text-decoration: none
+  a:hover
+    text-decoration: underline
+

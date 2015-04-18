@@ -2,7 +2,7 @@
 (function() {
   var blockDisplay;
 
-  blockDisplay = require('pages/block-display/block-display');
+  blockDisplay = require('common/ui/block-display/block-display');
 
   if (document.readyState !== 'loading') {
     blockDisplay.init();
@@ -12,7 +12,7 @@
 
 }).call(this);
 
-},{"pages/block-display/block-display":4}],2:[function(require,module,exports){
+},{"common/ui/block-display/block-display":4}],2:[function(require,module,exports){
 (function() {
   var Blocks, config, pageLimit, pollInterval, _;
 
@@ -91,7 +91,7 @@
   };
 
   Blocks.prototype.gotErr = function(req) {
-    return console.warn('error response from server on collection/blocks', err);
+    return console.warn('error response from server on collection/blocks', req);
   };
 
   Blocks.prototype.conErr = function() {
@@ -136,16 +136,19 @@
 
 }).call(this);
 
-},{"config":3,"lodash":5}],3:[function(require,module,exports){
-module.exports = {
-  blocktrailKey: 'f8e7b178a2bab632ef73444403d16f3090efe715'
-};
+},{"config":5,"lodash":6}],3:[function(require,module,exports){
+(function() {
+  module.exports = ['rgb(236,226,240)', 'rgb(208,209,230)', 'rgb(166,189,219)', 'rgb(103,169,207)', 'rgb(54,144,192)', 'rgb(2,129,138)', 'rgb(1,108,89)', 'rgb(1,70,54)'];
+
+}).call(this);
 
 },{}],4:[function(require,module,exports){
 (function() {
-  var Blocks, blocks, container, draw, init, timeStrToInt, _;
+  var Blocks, blockSizeLimit, blocks, container, dataColors, draw, init, timeStrToInt, _;
 
   Blocks = require('common/collections/blocks');
+
+  dataColors = require('common/collections/data-colors');
 
   _ = require('lodash');
 
@@ -153,15 +156,17 @@ module.exports = {
 
   container = null;
 
+  blockSizeLimit = 1000 * 1000;
+
   init = function() {
     console.log('BlockDisplay init');
-    container = d3.select("#DataVis");
-    container.attr("width", 1000);
-    container.attr("height", 1000);
+    container = d3.select("body").append('div').attr('class', 'block-display');
     blocks = new Blocks();
     blocks.onChange(draw);
-    window._blocks = blocks;
-    return window._container = container;
+    return window._info = {
+      blocks: blocks,
+      container: container
+    };
   };
 
   timeStrToInt = function(str) {
@@ -169,25 +174,24 @@ module.exports = {
   };
 
   draw = function() {
-    var circles, x, y;
+    var color, els, width;
     console.log("block.display draw() " + blocks.length + " blocks");
-    x = d3.scale.linear().range([0, 1000]);
-    x.domain(d3.extent(blocks, function(d) {
-      return d.transactions;
-    }));
-    y = d3.scale.linear().range([1000, 0]);
-    y.domain(d3.extent(blocks, function(d) {
-      return timeStrToInt(d.block_time);
-    }));
-    circles = container.selectAll('circle').data(blocks).enter().append('circle');
-    return circles.attr("cx", function(d) {
-      return x(d.transactions);
-    }).attr("cy", function(d) {
-      return y(timeStrToInt(d.block_time));
-    }).attr("r", 5).style("fill", function(d) {
-      return 'green';
-    }).append("svg:title").text(function(d) {
+    width = d3.scale.linear().range([2, 100]);
+    width.domain([0, blockSizeLimit]);
+    color = d3.scale.ordinal().range(dataColors);
+    color.domain([0, blockSizeLimit]);
+    window._info.width = width;
+    window._info.color = color;
+    els = container.selectAll('b').data(blocks);
+    return els.enter().append('b').style('width', function(d) {
+      return (width(d.transactions)) + '%';
+    }).style('background-color', function(d, i) {
+      console.log("" + i + ": " + d.transactions + " -> " + (color(d.transactions)));
+      return color(d.transactions);
+    }).attr('title', function(d) {
       return "Hash: " + (d.hash.substr(-8)) + " \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nHeight: " + d.height;
+    }).text(function(d) {
+      return d.hash.substr(-8);
     });
   };
 
@@ -197,7 +201,12 @@ module.exports = {
 
 }).call(this);
 
-},{"common/collections/blocks":2,"lodash":5}],5:[function(require,module,exports){
+},{"common/collections/blocks":2,"common/collections/data-colors":3,"lodash":6}],5:[function(require,module,exports){
+module.exports = {
+  blocktrailKey: 'f8e7b178a2bab632ef73444403d16f3090efe715'
+};
+
+},{}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license

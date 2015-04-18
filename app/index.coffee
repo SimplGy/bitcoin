@@ -1,4 +1,4 @@
-blockDisplay = require 'pages/block-display/block-display'
+blockDisplay = require 'common/ui/block-display/block-display'
 
 if document.readyState != 'loading'
   blockDisplay.init()
