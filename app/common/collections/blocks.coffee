@@ -90,6 +90,4 @@ Blocks.prototype.onChangeCall = ->
   @_handlers.onChange.forEach (fn) ->
     fn.apply @, arguments
 
-
-
 module.exports = Blocks
