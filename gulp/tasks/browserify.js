@@ -1,11 +1,13 @@
 (function() {
-  var browserify, gulp, source, task;
+  var browserify, config, gulp, source, task;
 
   gulp = require('gulp');
 
   browserify = require('browserify');
 
   source = require('vinyl-source-stream');
+
+  config = require('../config');
 
   task = function() {
     return browserify({
@@ -15,6 +17,10 @@
   };
 
   gulp.task('browserify', task);
+
+  gulp.task('browserify-watch', function() {
+    return gulp.watch(config.js, task);
+  });
 
   module.exports = task;
 

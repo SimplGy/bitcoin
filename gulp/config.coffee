@@ -1,4 +1,7 @@
 module.exports =
   dist: 'dist/**'
-  js:   './app/**/*.js'
   css:  './app/**/*.css'
+  js:   './app/**/*.js'
+  jslibs: [
+    'bower_components/d3/d3.js'
+  ]

@@ -1,6 +1,7 @@
 gulp        = require 'gulp'
 browserify  = require 'browserify'
-source      = require('vinyl-source-stream');
+source      = require('vinyl-source-stream')
+config      = require '../config'
 
 task = ->
   browserify(
@@ -11,5 +12,7 @@ task = ->
     .pipe(source('all.js'))      # Pass desired output filename to vinyl-source-stream
     .pipe(gulp.dest('./dist/'))  # Start piping stream to tasks!
 
-gulp.task('browserify', task);
-module.exports = task;
+
+gulp.task 'browserify', task
+gulp.task 'browserify-watch', -> gulp.watch config.js, task
+module.exports = task

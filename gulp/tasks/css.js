@@ -1,17 +1,24 @@
-var concat, config, cssmin, gulp, task;
+(function() {
+  var concat, config, cssmin, gulp, task;
 
-gulp = require('gulp');
+  gulp = require('gulp');
 
-cssmin = require('gulp-cssmin');
+  cssmin = require('gulp-cssmin');
 
-concat = require('gulp-concat');
+  concat = require('gulp-concat');
 
-config = require('../config');
+  config = require('../config');
 
-task = function() {
-  return gulp.src(config.css).pipe(cssmin()).pipe(concat('all.css')).pipe(gulp.dest('./dist'));
-};
+  task = function() {
+    return gulp.src(config.css).pipe(cssmin()).pipe(concat('all.css')).pipe(gulp.dest('./dist'));
+  };
 
-gulp.task('css', task);
+  gulp.task('css', task);
 
-module.exports = task;
+  gulp.task('css-watch', function() {
+    return gulp.watch(config.css, task);
+  });
+
+  module.exports = task;
+
+}).call(this);

@@ -9,5 +9,7 @@ task = ->
     .pipe(concat('all.css'))
     .pipe(gulp.dest('./dist'))
 
+
 gulp.task 'css', task
+gulp.task 'css-watch', -> gulp.watch config.css, task
 module.exports = task

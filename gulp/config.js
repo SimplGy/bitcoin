@@ -1,5 +1,9 @@
-module.exports = {
-  dist: 'dist/**',
-  js: './app/**/*.js',
-  css: './app/**/*.css'
-};
+(function() {
+  module.exports = {
+    dist: 'dist/**',
+    css: './app/**/*.css',
+    js: './app/**/*.js',
+    jslibs: ['bower_components/d3/d3.js']
+  };
+
+}).call(this);

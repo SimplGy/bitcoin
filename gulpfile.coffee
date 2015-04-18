@@ -1,4 +1,3 @@
 
 # Require all tasks in a particular folder
-requireDir  = require 'require-dir'
-requireDir './gulp/tasks', { recurse: true }
+require('require-dir') './gulp/tasks', { recurse: true }

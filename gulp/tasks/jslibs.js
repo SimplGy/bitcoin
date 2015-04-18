@@ -1,13 +1,22 @@
-var concat, gulp, task;
+(function() {
+  var concat, config, gulp, task;
 
-gulp = require('gulp');
+  gulp = require('gulp');
 
-concat = require('gulp-concat');
+  concat = require('gulp-concat');
 
-task = function() {
-  return gulp.src(['bower_components/d3/d3.js']).pipe(concat('lib.js')).pipe(gulp.dest('./dist'));
-};
+  config = require('../config');
 
-gulp.task('jslibs', task);
+  task = function() {
+    return gulp.src(config.jslibs).pipe(concat('lib.js')).pipe(gulp.dest('./dist'));
+  };
 
-module.exports = task;
+  gulp.task('jslibs', task);
+
+  gulp.task('jslibs-watch', function() {
+    return gulp.watch(config.jslibs, task);
+  });
+
+  module.exports = task;
+
+}).call(this);
