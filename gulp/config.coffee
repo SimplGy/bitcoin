@@ -4,4 +4,5 @@ module.exports =
   js:   './app/**/*.js'
   jslibs: [
     'bower_components/d3/d3.js'
+    'bower_components/fastclick/lib/fastclick.js'
   ]
