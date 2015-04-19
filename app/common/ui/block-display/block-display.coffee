@@ -1,10 +1,14 @@
 Blocks      = require 'common/collections/blocks'
 dataColors  = require 'common/collections/data-colors'
 _           = require 'lodash'
+Moment      = require 'moment'
 
 blocks = null
 container = null
 blockSizeLimit = 1000 * 1000
+blocksPerHour = 6
+blocksPerDay = blocksPerHour * 24
+
 
 init = ->
   console.log 'BlockDisplay init'
@@ -16,6 +20,7 @@ init = ->
   window._info =
     blocks: blocks
     container: container
+    Moment: Moment
 
 
 timeStrToInt = (str) -> (new Date(str)).getTime()
@@ -25,12 +30,14 @@ draw = ->
   console.log "block.display draw() #{blocks.length} blocks"
 
   # What is the range of possible values?
-  width = d3.scale.linear().range([2, 100])
-#  width.domain d3.extent(blocks, (d) -> d.transactions)
-  width.domain [0, blockSizeLimit]
-  color = d3.scale.ordinal().range dataColors
+  width = d3.scale.linear().clamp true
+  width.range [20, 100]
+  width.domain d3.extent(blocks, (d) -> d.transactions)
+#  color = d3.scale.ordinal().range [1,2,3,4,5] #dataColors
+#  color.domain [0, blockSizeLimit]
+  color = d3.scale.quantize()
   color.domain [0, blockSizeLimit]
-#  color.domain d3.extent(blocks, (d) -> d.transactions)
+  color.range dataColors.warn
 
   window._info.width = width
   window._info.color = color
@@ -61,9 +68,16 @@ draw = ->
   # ENTER
   # Create new elements as needed.
   els.enter().append('b')
-    .style('width', (d) -> (width d.transactions) + '%')
-    .style('background-color', (d, i) -> console.log("#{i}: #{d.transactions} -> #{color d.transactions}"); color d.transactions)
-    .attr('title', (d) -> "Hash: #{d.hash.substr(-8)} \nTransaction Count: #{d.transactions} \nByte Size: #{d.byte_size} \nHeight: #{d.height}" )
+    .style('width', (d) -> width(d.transactions) + 'px')
+    .style('background-color', (d) -> color d.byte_size)
+    .attr('title', (d) -> "
+      Hash: #{d.hash.substr(-8)}
+      \nWhen: #{Moment(d.block_time).fromNow()} (#{Moment(d.block_time).format('YYYY MM-DD h:mma')})
+      \nTransaction Count: #{d.transactions}
+      \nByte Size: #{d.byte_size}
+      \nByte Limit: #{Math.round(d.byte_size/blockSizeLimit*100)}%
+      \nHeight: #{d.height}
+    ")
     .text((d) -> d.hash.substr(-8))
 
   # ENTER + UPDATE

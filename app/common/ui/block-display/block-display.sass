@@ -1,25 +1,24 @@
 @import '../../styles/__'
 
 .block-display
+  $blockHeight: 30px
   position: relative
   font-size: 0
 
 
   // One bitcoin block
   b
-    $w: 100px // placeholder, set by data
-    $h: 30px
     display: inline-block
     box-sizing: border-box
-    width: 100px
-    height: 30px
+    width: 100px // placeholder, set by data
+    height: $blockHeight
     background-color: $shade10
-    box-shadow: inset 0 0 1px white
+    margin: 1px
     // tiny hash label
     font-weight: normal
     font-size: 10px
-    line-height: $h * 1.5
-    color: $light20
+    line-height: $blockHeight * 1.6
+    color: transparent
     text-align: right
     padding-right: 3px
     overflow: hidden
@@ -31,6 +30,7 @@
     // TODO: ambient throbbing animation
 
   b:hover
-    background-color: $black15 !important
-    color: $black60
-    box-shadow: inset 0 0 1px $black80
+    position: relative
+    box-shadow: inset 0 -12px 0 $light60, 0 0 0 2px white, 0 5px 30px 5px $shade60 // label bg, white border, throw a shadow behind the block
+    color: $shade80
+    z-index: 1
