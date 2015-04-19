@@ -53,7 +53,7 @@
       return width(d.transactions) + 'px';
     }).style('background-color', function(d) {
       return color(d.byte_size);
-    }).attr('title', function(d) {
+    }).attr('tabindex', 0).attr('title', function(d) {
       return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
     }).text(function(d) {
       return d.hash.substr(-8);

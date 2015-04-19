@@ -70,6 +70,7 @@ draw = ->
   els.enter().append('b')
     .style('width', (d) -> width(d.transactions) + 'px')
     .style('background-color', (d) -> color d.byte_size)
+    .attr('tabindex', 0) # focusable
     .attr('title', (d) -> "
       Hash: #{d.hash.substr(-8)}
       \nWhen: #{Moment(d.block_time).fromNow()} (#{Moment(d.block_time).format('YYYY MM-DD h:mma')})
