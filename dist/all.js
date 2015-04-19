@@ -1,13 +1,18 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
-  var blockDisplay;
+  var blockDisplay, onReady;
 
   blockDisplay = require('common/ui/block-display/block-display');
 
+  onReady = function() {
+    FastClick.attach(document.body);
+    return blockDisplay.init();
+  };
+
   if (document.readyState !== 'loading') {
-    blockDisplay.init();
+    onReady();
   } else {
-    document.addEventListener('DOMContentLoaded', blockDisplay.init);
+    document.addEventListener('DOMContentLoaded', onReady);
   }
 
 }).call(this);
@@ -140,7 +145,7 @@
 (function() {
   module.exports = {
     good: ['rgb(236,226,240)', 'rgb(208,209,230)', 'rgb(166,189,219)', 'rgb(103,169,207)', 'rgb(54,144,192)', 'rgb(2,129,138)', 'rgb(1,108,89)', 'rgb(1,70,54)'],
-    warn: ['rgb(255,255,204)', 'rgb(255,237,160)', 'rgb(254,217,118)', 'rgb(254,178,76)', 'rgb(253,141,60)', 'rgb(252,78,42)', 'rgb(227,26,28)', 'rgb(189,0,38)', 'rgb(128,0,38)']
+    warn: ['rgb(255,237,160)', 'rgb(254,217,118)', 'rgb(254,178,76)', 'rgb(253,141,60)', 'rgb(252,78,42)', 'rgb(227,26,28)', 'rgb(189,0,38)', 'rgb(128,0,38)']
   };
 
 }).call(this);
@@ -201,7 +206,7 @@
       return width(d.transactions) + 'px';
     }).style('background-color', function(d) {
       return color(d.byte_size);
-    }).attr('title', function(d) {
+    }).attr('tabindex', 0).attr('title', function(d) {
       return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
     }).text(function(d) {
       return d.hash.substr(-8);
