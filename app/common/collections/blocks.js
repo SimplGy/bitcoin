@@ -5,14 +5,14 @@
 
   _ = require('lodash');
 
-  pageLimit = 20;
+  pageLimit = 10;
 
   pollInterval = 1000 * 20;
 
   Blocks = function() {
     console.log('block collection instantiated, fetching initial data');
     this.curPage = 1;
-    this.pageSize = 100;
+    this.pageSize = 200;
     return this.getHistorical(null, this.pollForLatest.bind(this));
   };
 
@@ -22,7 +22,7 @@
     var request;
     console.log('getLatest');
     request = new XMLHttpRequest();
-    request.open('GET', "https://api.blocktrail.com/v1/btc/block/latest?api_key=" + config.blocktrailKey, true);
+    request.open('GET', "" + config.api + "/v1/btc/block/latest?api_key=" + config.blocktrailKey, true);
     request.onerror = this.gotErr.bind(this);
     request.onload = (function() {
       if (request.status >= 200 && request.status < 400) {
@@ -47,7 +47,7 @@
     var request;
     page = page || this.curPage;
     request = new XMLHttpRequest();
-    request.open('GET', "https://api.blocktrail.com/v1/btc/all-blocks?page=" + page + "&limit=" + this.pageSize + "&sort_dir=desc&api_key=" + config.blocktrailKey, true);
+    request.open('GET', "" + config.api + "/v1/btc/all-blocks?page=" + page + "&limit=" + this.pageSize + "&sort_dir=desc&api_key=" + config.blocktrailKey, true);
     request.onerror = this.gotErr.bind(this);
     request.onload = (function() {
       var resp;

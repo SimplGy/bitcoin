@@ -1,13 +1,13 @@
 config = require 'config'
 _ = require 'lodash'
-pageLimit = 20 # Should bump this up but don't want to wear out my welcome on the free API
+pageLimit = 10 # Should bump this up but don't want to wear out my welcome on the free API
 #pageSizeLimit = 200
 pollInterval = 1000 * 20
 
 Blocks = () ->
   console.log 'block collection instantiated, fetching initial data'
-  @curPage = 1
-  @pageSize = 100
+  @curPage  = 1
+  @pageSize = 200
   @getHistorical(null, @pollForLatest.bind @)
 
 Blocks.prototype = new Array()
@@ -15,7 +15,7 @@ Blocks.prototype = new Array()
 Blocks.prototype.getLatest = ->
   console.log 'getLatest'
   request = new XMLHttpRequest()
-  request.open 'GET', "https://api.blocktrail.com/v1/btc/block/latest?api_key=#{config.blocktrailKey}", true
+  request.open 'GET', "#{config.api}/v1/btc/block/latest?api_key=#{config.blocktrailKey}", true
   request.onerror = @gotErr.bind @
   request.onload  = (->
     if (request.status >= 200 && request.status < 400)
@@ -33,7 +33,7 @@ Blocks.prototype.gotLatest = (resp) ->
 Blocks.prototype.getHistorical = (page, callback) ->
   page = page || @curPage
   request = new XMLHttpRequest()
-  request.open 'GET', "https://api.blocktrail.com/v1/btc/all-blocks?page=#{page}&limit=#{@pageSize}&sort_dir=desc&api_key=#{config.blocktrailKey}", true
+  request.open 'GET', "#{config.api}/v1/btc/all-blocks?page=#{page}&limit=#{@pageSize}&sort_dir=desc&api_key=#{config.blocktrailKey}", true
   request.onerror = @gotErr.bind @
   request.onload  = (->
     if (request.status >= 200 && request.status < 400)
