@@ -1,12 +1,17 @@
 (function() {
-  var blockDisplay;
+  var blockDisplay, onReady;
 
   blockDisplay = require('common/ui/block-display/block-display');
 
+  onReady = function() {
+    FastClick.attach(document.body);
+    return blockDisplay.init();
+  };
+
   if (document.readyState !== 'loading') {
-    blockDisplay.init();
+    onReady();
   } else {
-    document.addEventListener('DOMContentLoaded', blockDisplay.init);
+    document.addEventListener('DOMContentLoaded', onReady);
   }
 
 }).call(this);

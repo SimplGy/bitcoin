@@ -1,6 +1,12 @@
 blockDisplay = require 'common/ui/block-display/block-display'
 
-if document.readyState != 'loading'
+
+onReady = ->
+  FastClick.attach document.body
   blockDisplay.init()
+
+
+if document.readyState != 'loading'
+  onReady()
 else
-  document.addEventListener 'DOMContentLoaded', blockDisplay.init
+  document.addEventListener 'DOMContentLoaded', onReady

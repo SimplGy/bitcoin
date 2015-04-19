@@ -12,6 +12,7 @@
     "bower_components"
   ],
   "dependencies": {
-    "d3": "~3.5.5"
+    "d3": "~3.5.5",
+    "fastclick": "~1.0.6"
   }
 }
