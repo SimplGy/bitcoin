@@ -10,7 +10,6 @@
   -ms-user-select: none
   user-select: none
 
-
   // One bitcoin block
   b
     display: inline-block
@@ -35,8 +34,9 @@
     border: 3px dotted $shade40
     // TODO: ambient throbbing animation
 
-  b:hover
+  b:focus
     position: relative
     box-shadow: inset 0 -12px 0 $light60, 0 0 0 2px white, 0 5px 30px 5px $shade60 // label bg, white border, throw a shadow behind the block
     color: $shade80
     z-index: 1
+    outline: none
