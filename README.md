@@ -23,7 +23,10 @@ The color represents how close it is to capacity in byte size. Blocks are limite
 - [x] Blocks scale color by % of byte limit
 - [x] Pretty-print time and block capacity
 - [x] #build: a css-only change should inject new css, not refresh the browser
+- [x] Split blocks by day (in local time)
 - [ ] #build: rebuild js changes faster, incrementally.
+- [ ] Add a model layer with caching. Confirmed blocks are immutable and the caching layer can leverage that.
+- [ ] Support infinite scroll with intelligent data requesting
 - [ ] Consider: more interesting segmentation. Per day in local time? Responsive sizing? Other dimensions?
 - [ ] Pending block (shows a dotted/transparent appearance). says "pending, last confirmed block at DD"
 

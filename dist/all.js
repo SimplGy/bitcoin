@@ -19,11 +19,13 @@
 
 },{"common/ui/block-display/block-display":4}],2:[function(require,module,exports){
 (function() {
-  var Blocks, config, pageLimit, pollInterval, _;
+  var Blocks, Moment, config, pageLimit, pollInterval, _;
 
   config = require('config');
 
   _ = require('lodash');
+
+  Moment = require('moment');
 
   pageLimit = 10;
 
@@ -38,9 +40,15 @@
 
   Blocks.prototype = new Array();
 
+  Blocks.prototype.parse = function(one) {
+    var m;
+    m = new Moment(one.block_time);
+    one.date = m.format('YYYY-MM-DD');
+    return one;
+  };
+
   Blocks.prototype.getLatest = function() {
     var request;
-    console.log('getLatest');
     request = new XMLHttpRequest();
     request.open('GET', "" + config.api + "/v1/btc/block/latest?api_key=" + config.blocktrailKey, true);
     request.onerror = this.gotErr.bind(this);
@@ -57,7 +65,7 @@
   Blocks.prototype.gotLatest = function(resp) {
     var wasInserted;
     console.log('gotLatest', resp.hash);
-    wasInserted = this.safeInsert(resp);
+    wasInserted = this.safeInsert(this.parse(resp));
     if (wasInserted) {
       return this.onChangeCall();
     }
@@ -85,8 +93,12 @@
   };
 
   Blocks.prototype.gotHistorical = function(resp) {
-    console.log('gotHistorical', resp);
-    Array.prototype.push.apply(this, resp.data);
+    var one, _i, _len, _ref;
+    _ref = resp.data;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      one = _ref[_i];
+      this.push(this.parse(one));
+    }
     this.onChangeCall();
     this.curPage++;
     if (this.curPage > pageLimit) {
@@ -141,11 +153,14 @@
 
 }).call(this);
 
-},{"config":5,"lodash":6}],3:[function(require,module,exports){
+},{"config":5,"lodash":6,"moment":7}],3:[function(require,module,exports){
 (function() {
   module.exports = {
     good: ['rgb(236,226,240)', 'rgb(208,209,230)', 'rgb(166,189,219)', 'rgb(103,169,207)', 'rgb(54,144,192)', 'rgb(2,129,138)', 'rgb(1,108,89)', 'rgb(1,70,54)'],
-    warn: ['rgb(255,237,160)', 'rgb(254,217,118)', 'rgb(254,178,76)', 'rgb(253,141,60)', 'rgb(252,78,42)', 'rgb(227,26,28)', 'rgb(189,0,38)', 'rgb(128,0,38)']
+    warn: ['rgb(255,237,160)', 'rgb(254,217,118)', 'rgb(254,178,76)', 'rgb(253,141,60)', 'rgb(252,78,42)', 'rgb(227,26,28)', 'rgb(189,0,38)', 'rgb(128,0,38)'],
+    florida: ['rgb(247,252,240)', 'rgb(224,243,219)', 'rgb(204,235,197)', 'rgb(168,221,181)', 'rgb(123,204,196)', 'rgb(78,179,211)', 'rgb(43,140,190)', 'rgb(8,104,172)', 'rgb(8,64,129)'],
+    tooBlue: ['rgb(255,255,217)', 'rgb(237,248,177)', 'rgb(199,233,180)', 'rgb(127,205,187)', 'rgb(65,182,196)', 'rgb(29,145,192)', 'rgb(34,94,168)', 'rgb(37,52,148)', 'rgb(8,29,88)'],
+    purpleToBlue: ['rgb(247,244,249)', 'rgb(231,225,239)', 'rgb(212,185,218)', 'rgb(201,148,199)', 'rgb(223,101,176)', 'rgb(231,41,138)', 'rgb(206,18,86)', 'rgb(152,0,67)', 'rgb(103,0,31)']
   };
 
 }).call(this);
@@ -189,8 +204,8 @@
   };
 
   draw = function() {
-    var color, els, width;
-    console.log("block.display draw() " + blocks.length + " blocks");
+    var blocksByDay, color, data, day, dayEl, dayEls, days, els, width, _results;
+    console.log("block.display draw() " + blocks.length + " blocks", blocks);
     width = d3.scale.linear().clamp(true);
     width.range([20, 100]);
     width.domain(d3.extent(blocks, function(d) {
@@ -199,18 +214,39 @@
     color = d3.scale.quantize();
     color.domain([0, blockSizeLimit]);
     color.range(dataColors.warn);
-    window._info.width = width;
-    window._info.color = color;
-    els = container.selectAll('b').data(blocks);
-    return els.enter().append('b').style('width', function(d) {
-      return width(d.transactions) + 'px';
-    }).style('background-color', function(d) {
-      return color(d.byte_size);
-    }).attr('tabindex', 0).attr('title', function(d) {
-      return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
-    }).text(function(d) {
-      return d.hash.substr(-8);
+    blocksByDay = _.groupBy(blocks, 'date');
+    days = Object.keys(blocksByDay);
+    dayEls = container.selectAll('.day').data(days, String).enter().append('div').attr('class', function(d) {
+      return "day day-" + d;
     });
+    dayEls.append('h3').text(function(d) {
+      return Moment(d).format('LL');
+    });
+    _results = [];
+    for (day in blocksByDay) {
+      data = blocksByDay[day];
+      dayEl = container.select('.day-' + day);
+      els = dayEl.selectAll('b').data(data, function(d) {
+        return d.hash;
+      });
+      _results.push(els.enter().append('b').style('width', function(d) {
+        return width(d.transactions) + 'px';
+      }).style('background-color', function(d) {
+        return color(d.byte_size);
+      }).attr('tabindex', 0).attr('class', function(d) {
+        var className, curDay;
+        if (d.date !== curDay) {
+          className = 'newDay';
+        }
+        curDay = d.date;
+        return className;
+      }).attr('title', function(d) {
+        return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
+      }).text(function(d) {
+        return d.hash.substr(-8);
+      }));
+    }
+    return _results;
   };
 
   module.exports = {

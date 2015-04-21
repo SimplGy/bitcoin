@@ -27,7 +27,7 @@ timeStrToInt = (str) -> (new Date(str)).getTime()
 
 
 draw = ->
-  console.log "block.display draw() #{blocks.length} blocks"
+  console.log "block.display draw() #{blocks.length} blocks", blocks
 
   # What is the range of possible values?
   width = d3.scale.linear().clamp true
@@ -39,57 +39,53 @@ draw = ->
   color.domain [0, blockSizeLimit]
   color.range dataColors.warn
 
-  window._info.width = width
-  window._info.color = color
+  # Group the blocks by day, render days one at a time
+  blocksByDay = _.groupBy blocks, 'date'
+  days = Object.keys blocksByDay
+  dayEls = container.selectAll('.day').data(days, String).enter().append('div').attr('class', (d) -> "day day-#{d}")
+  dayEls.append('h3').text (d) -> Moment(d).format 'LL'
 
-#  y = d3.scale.linear().range([1000, 0])
-#  y.domain d3.extent(blocks, (d) -> timeStrToInt d.block_time)
+  for day, data of blocksByDay
+    dayEl = container.select('.day-' + day)
 
+    # DATA JOIN
+    # Join new data with old elements, if any.
+    els = dayEl.selectAll('b').data(data, (d) -> d.hash) # blocks are uniquely identified by their `hash` property
 
-  # Apply the values to the visual elements
-#  circles = container.selectAll('circle').data(blocks).enter().append 'circle'
-#  circles
-#    .attr("cx", (d) -> x d.transactions )
-#    .attr("cy", (d) -> y timeStrToInt d.block_time )
-#    .attr("r", 5 )
-#    .style("fill", (d) -> 'green' )
-#    .append("svg:title")
-#      .text((d) -> "Hash: #{d.hash.substr(-8)} \nTransaction Count: #{d.transactions} \nByte Size: #{d.byte_size} \nHeight: #{d.height}" )
+    # UPDATE
+    # Update old elements as needed.
+    # els.attr "class", "update"
 
+    # ENTER
+    # Create new elements as needed.
+    els.enter().append('b')
+      .style('width',             (d) -> width(d.transactions) + 'px')
+      .style('background-color',  (d) -> color d.byte_size)
+      .attr('tabindex', 0)        # focusable
+      .attr('class',              (d) ->
+        if d.date isnt curDay then className = 'newDay'
+        curDay = d.date
+        return className
+      )
+      .attr('title',              (d) -> "
+        Hash: #{d.hash.substr(-8)}
+        \nWhen: #{Moment(d.block_time).fromNow()} (#{Moment(d.block_time).format('YYYY MM-DD h:mma')})
+        \nTransaction Count: #{d.transactions}
+        \nByte Size: #{d.byte_size}
+        \nByte Limit: #{Math.round(d.byte_size/blockSizeLimit*100)}%
+        \nHeight: #{d.height}
+      ")
+      .text((d) -> d.hash.substr(-8))
+#
+    # ENTER + UPDATE
+    # Appending to the enter selection expands the update selection to include
+    # entering elements; so, operations on the update selection after appending to
+    # the enter selection will apply to both entering and updating nodes.
+  #  els.text(function(d) { return d; });
 
-  # DATA JOIN
-  # Join new data with old elements, if any.
-  els = container.selectAll('b').data(blocks)
-
-  # UPDATE
-  # Update old elements as needed.
-#  els.attr "class", "update"
-
-  # ENTER
-  # Create new elements as needed.
-  els.enter().append('b')
-    .style('width', (d) -> width(d.transactions) + 'px')
-    .style('background-color', (d) -> color d.byte_size)
-    .attr('tabindex', 0) # focusable
-    .attr('title', (d) -> "
-      Hash: #{d.hash.substr(-8)}
-      \nWhen: #{Moment(d.block_time).fromNow()} (#{Moment(d.block_time).format('YYYY MM-DD h:mma')})
-      \nTransaction Count: #{d.transactions}
-      \nByte Size: #{d.byte_size}
-      \nByte Limit: #{Math.round(d.byte_size/blockSizeLimit*100)}%
-      \nHeight: #{d.height}
-    ")
-    .text((d) -> d.hash.substr(-8))
-
-  # ENTER + UPDATE
-  # Appending to the enter selection expands the update selection to include
-  # entering elements; so, operations on the update selection after appending to
-  # the enter selection will apply to both entering and updating nodes.
-#  els.text(function(d) { return d; });
-
-  # EXIT
-  # Remove old elements as needed.
-#  els.exit().remove()
+    # EXIT
+    # Remove old elements as needed.
+    # els.exit().remove()
 
 
 # External API

@@ -36,8 +36,8 @@
   };
 
   draw = function() {
-    var color, els, width;
-    console.log("block.display draw() " + blocks.length + " blocks");
+    var blocksByDay, color, data, day, dayEl, dayEls, days, els, width, _results;
+    console.log("block.display draw() " + blocks.length + " blocks", blocks);
     width = d3.scale.linear().clamp(true);
     width.range([20, 100]);
     width.domain(d3.extent(blocks, function(d) {
@@ -46,18 +46,39 @@
     color = d3.scale.quantize();
     color.domain([0, blockSizeLimit]);
     color.range(dataColors.warn);
-    window._info.width = width;
-    window._info.color = color;
-    els = container.selectAll('b').data(blocks);
-    return els.enter().append('b').style('width', function(d) {
-      return width(d.transactions) + 'px';
-    }).style('background-color', function(d) {
-      return color(d.byte_size);
-    }).attr('tabindex', 0).attr('title', function(d) {
-      return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
-    }).text(function(d) {
-      return d.hash.substr(-8);
+    blocksByDay = _.groupBy(blocks, 'date');
+    days = Object.keys(blocksByDay);
+    dayEls = container.selectAll('.day').data(days, String).enter().append('div').attr('class', function(d) {
+      return "day day-" + d;
     });
+    dayEls.append('h3').text(function(d) {
+      return Moment(d).format('LL');
+    });
+    _results = [];
+    for (day in blocksByDay) {
+      data = blocksByDay[day];
+      dayEl = container.select('.day-' + day);
+      els = dayEl.selectAll('b').data(data, function(d) {
+        return d.hash;
+      });
+      _results.push(els.enter().append('b').style('width', function(d) {
+        return width(d.transactions) + 'px';
+      }).style('background-color', function(d) {
+        return color(d.byte_size);
+      }).attr('tabindex', 0).attr('class', function(d) {
+        var className, curDay;
+        if (d.date !== curDay) {
+          className = 'newDay';
+        }
+        curDay = d.date;
+        return className;
+      }).attr('title', function(d) {
+        return "Hash: " + (d.hash.substr(-8)) + " \nWhen: " + (Moment(d.block_time).fromNow()) + " (" + (Moment(d.block_time).format('YYYY MM-DD h:mma')) + ") \nTransaction Count: " + d.transactions + " \nByte Size: " + d.byte_size + " \nByte Limit: " + (Math.round(d.byte_size / blockSizeLimit * 100)) + "% \nHeight: " + d.height;
+      }).text(function(d) {
+        return d.hash.substr(-8);
+      }));
+    }
+    return _results;
   };
 
   module.exports = {

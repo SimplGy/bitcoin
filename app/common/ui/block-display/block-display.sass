@@ -10,6 +10,15 @@
   -ms-user-select: none
   user-select: none
 
+  h3
+    color: $veryMuted
+    font-size: 11px
+    line-height: 20px
+    font-weight: normal
+    padding-left: 5px
+    color: $veryMuted
+    margin: 1px 0
+
   // One bitcoin block
   b
     display: inline-block
@@ -33,6 +42,12 @@
     background-color: $shade10
     border: 3px dotted $shade40
     // TODO: ambient throbbing animation
+
+  // The first block of the day in local time. Used as a visual indicator
+  //b.newDay
+  //  background-color: green !important
+  //  clear: both
+
 
   b:focus
     position: relative
