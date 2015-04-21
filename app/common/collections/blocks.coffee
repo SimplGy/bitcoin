@@ -1,5 +1,7 @@
-config = require 'config'
-_ = require 'lodash'
+config      = require 'config'
+_           = require 'lodash'
+Moment      = require 'moment'
+
 pageLimit = 10 # Should bump this up but don't want to wear out my welcome on the free API
 #pageSizeLimit = 200
 pollInterval = 1000 * 20
@@ -12,8 +14,16 @@ Blocks = () ->
 
 Blocks.prototype = new Array()
 
+# Every element is parsed before it is added to the collection.
+# The default implemenation should be a pass-through
+Blocks.prototype.parse = (one) ->
+  m = new Moment one.block_time
+  one.date = m.format 'YYYY-MM-DD' # css classname safe date stamp (not time), so we can detect boundaries of day by locale
+#  one.parsed = true
+  one
+
 Blocks.prototype.getLatest = ->
-  console.log 'getLatest'
+#  console.log 'getLatest'
   request = new XMLHttpRequest()
   request.open 'GET', "#{config.api}/v1/btc/block/latest?api_key=#{config.blocktrailKey}", true
   request.onerror = @gotErr.bind @
@@ -27,7 +37,7 @@ Blocks.prototype.getLatest = ->
 
 Blocks.prototype.gotLatest = (resp) ->
   console.log 'gotLatest', resp.hash
-  wasInserted = @safeInsert resp
+  wasInserted = @safeInsert @parse resp
   @onChangeCall() if wasInserted
 
 Blocks.prototype.getHistorical = (page, callback) ->
@@ -47,8 +57,10 @@ Blocks.prototype.getHistorical = (page, callback) ->
   request.send()
 
 Blocks.prototype.gotHistorical = (resp) ->
-  console.log 'gotHistorical', resp
-  Array.prototype.push.apply @, resp.data # add the new data to this array
+#  console.log 'gotHistorical', resp
+#  Array.prototype.push.apply @, resp.data # add the new data to this array
+  for one in resp.data
+    @push @parse one
   @onChangeCall()
   @curPage++
 #  @pageSize *= 2 # Can't change the page size because then there will be overlaps. The API doesn't provide an offset option.

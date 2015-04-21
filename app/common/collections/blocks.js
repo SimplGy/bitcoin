@@ -1,9 +1,11 @@
 (function() {
-  var Blocks, config, pageLimit, pollInterval, _;
+  var Blocks, Moment, config, pageLimit, pollInterval, _;
 
   config = require('config');
 
   _ = require('lodash');
+
+  Moment = require('moment');
 
   pageLimit = 10;
 
@@ -18,9 +20,15 @@
 
   Blocks.prototype = new Array();
 
+  Blocks.prototype.parse = function(one) {
+    var m;
+    m = new Moment(one.block_time);
+    one.date = m.format('YYYY-MM-DD');
+    return one;
+  };
+
   Blocks.prototype.getLatest = function() {
     var request;
-    console.log('getLatest');
     request = new XMLHttpRequest();
     request.open('GET', "" + config.api + "/v1/btc/block/latest?api_key=" + config.blocktrailKey, true);
     request.onerror = this.gotErr.bind(this);
@@ -37,7 +45,7 @@
   Blocks.prototype.gotLatest = function(resp) {
     var wasInserted;
     console.log('gotLatest', resp.hash);
-    wasInserted = this.safeInsert(resp);
+    wasInserted = this.safeInsert(this.parse(resp));
     if (wasInserted) {
       return this.onChangeCall();
     }
@@ -65,8 +73,12 @@
   };
 
   Blocks.prototype.gotHistorical = function(resp) {
-    console.log('gotHistorical', resp);
-    Array.prototype.push.apply(this, resp.data);
+    var one, _i, _len, _ref;
+    _ref = resp.data;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      one = _ref[_i];
+      this.push(this.parse(one));
+    }
     this.onChangeCall();
     this.curPage++;
     if (this.curPage > pageLimit) {
