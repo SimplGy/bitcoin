@@ -22,6 +22,8 @@ The color represents how close it is to capacity in byte size. Blocks are limite
 - [x] use [api-vcr](https://www.npmjs.com/package/api-vcr) to record responses so I can work offline
 - [x] Blocks scale color by % of byte limit
 - [x] Pretty-print time and block capacity
+- [x] #build: a css-only change should inject new css, not refresh the browser
+- [ ] #build: rebuild js changes faster, incrementally.
 - [ ] Consider: more interesting segmentation. Per day in local time? Responsive sizing? Other dimensions?
 - [ ] Pending block (shows a dotted/transparent appearance). says "pending, last confirmed block at DD"
 

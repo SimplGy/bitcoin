@@ -13,7 +13,7 @@
         baseDir: './'
       }
     });
-    return gulp.watch(['index.html', 'dist/**'], {
+    return gulp.watch(['index.html', 'dist/**.js'], {
       cwd: './'
     }, reload);
   };
