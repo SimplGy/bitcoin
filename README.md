@@ -26,7 +26,10 @@ The color represents how close it is to capacity in byte size. Blocks are limite
 - [x] Split blocks by day (in local time)
 - [ ] #build: rebuild js changes faster, incrementally.
 - [ ] Add a model layer with caching. Confirmed blocks are immutable and the caching layer can leverage that.
-- [ ] Support infinite scroll with intelligent data requesting
+- [ ] $_$: Add a donation address and QR code
+- [ ] Support changing the api key so an expert user can make it work if massive traffic makes me hit the API limit
+- [ ] Ask the API providers for a free rate limit upgrade for this community project
+- [ ] Support infinite scroll with intelligent data requesting (fix height per day and request in days? fixed number of blocks per PX tall?)
 - [ ] Consider: more interesting segmentation. Per day in local time? Responsive sizing? Other dimensions?
 - [ ] Pending block (shows a dotted/transparent appearance). says "pending, last confirmed block at DD"
 
