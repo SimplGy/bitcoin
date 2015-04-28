@@ -10,6 +10,16 @@ Many computers expend processing power to validate `blocks` of transactions. The
 
 This is what people talk about when they say `block chain`. A confirmed block is forever, and the block chain is the history of all confirmed blocks every agreed on by the community of nodes in the bitcoin network.
 
+This visualization shows the bitcoin blockchain. Recently confirmed blocks are at the top and older ones are at the bottom.
+
+Each rectangle is a single block of many transactions. Bitcoin processes about one block every 10 minutes.
+
+The width of the block represents the number of transactions.
+
+The color represents how close it is to capacity in byte size. Blocks are limited by the bitcoin protocol to 1mb, and many blocks are already very close to that limit, as you can see.
+
+![Image of UI](https://raw.githubusercontent.com/SimplGy/bitcoin-visualizer/master/docs/screen2015-04.png)
+
 
 ## Facts
 
@@ -21,7 +31,7 @@ This means there are:
 * 144 blocks per day
 * 52560 blocks per year
 
-For the forseeable future there will be less than 1,000,000 blocks, which is
+For the forseeable future there will be less than 1,000,000 blocks.
 
 ## Instructions
 
@@ -31,25 +41,6 @@ To run the project in development mode:
 
 
 
-
-
-
-
-
-
-
-
-
-
-This visualization shows the bitcoin blockchain. Recently confirmed blocks are at the top and older ones are at the bottom.
-
-Each rectangle is a single block of many transactions. Bitcoin processes about one block every 10 minutes.
-
-The width of the block represents the number of transactions.
-
-The color represents how close it is to capacity in byte size. Blocks are limited by the bitcoin protocol to 1mb, and many blocks are already very close to that limit, as you can see.
-
-![Image of UI](https://raw.githubusercontent.com/SimplGy/bitcoin-visualizer/master/docs/screen2015-04.png)
 
 ## TODO
 

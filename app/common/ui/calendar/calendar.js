@@ -64,10 +64,12 @@
   };
 
   render = function() {
-    var end, idx, row, scrollY, start, visibleRange, _i, _j, _len, _results;
+    var end, idx, row, scrollY, start, totalRows, visibleRange, _i, _j, _len, _results;
     scrollY = window.scrollY;
     start = Math.floor((scrollY - size.topOffset) / size.dayHeight);
     end = start + Math.ceil((window.innerHeight + size.topOffset) / size.dayHeight);
+    totalRows = Math.ceil(model.totalDays / 7) + 1;
+    end = Math.min(end, totalRows);
     if (scrollY > previousScrollY) {
       end += size.rows - 1;
     } else {

@@ -33,6 +33,9 @@ init = ->
 # Reset the dom elements. This should only need to be done when the screen size changes, because this means the number of elements that fit will have changed.
 resetElements = ->
   container.innerHTML = ''
+  # Size the container to fit all the days in the data set
+#  totalRows = Math.ceil(model.totalDays / 7) + 1
+#  container.style.height = "#{totalRows * size.dayHeight}px"
   i = 0
   while i++ < size.rows * 2 # Create twice as many rows as will fit on screen
     row = document.createElement 'ol'
@@ -53,6 +56,9 @@ render = ->
   scrollY = window.scrollY
   start = Math.floor (scrollY - size.topOffset) / size.dayHeight
   end = start + Math.ceil (window.innerHeight + size.topOffset) / size.dayHeight
+  # Limit the end by the total number of rows in the data
+  totalRows = Math.ceil(model.totalDays / 7) + 1
+  end = Math.min end, totalRows
 
   # Adjust the visible range to draw more ahead in the direction of the scroll
 #  scrollDirection = if scrollY > previousScrollY then 1 else -1

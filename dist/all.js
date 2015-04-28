@@ -114,10 +114,12 @@
   };
 
   render = function() {
-    var end, idx, row, scrollY, start, visibleRange, _i, _j, _len, _results;
+    var end, idx, row, scrollY, start, totalRows, visibleRange, _i, _j, _len, _results;
     scrollY = window.scrollY;
     start = Math.floor((scrollY - size.topOffset) / size.dayHeight);
     end = start + Math.ceil((window.innerHeight + size.topOffset) / size.dayHeight);
+    totalRows = Math.ceil(model.totalDays / 7) + 1;
+    end = Math.min(end, totalRows);
     if (scrollY > previousScrollY) {
       end += size.rows - 1;
     } else {
@@ -174,12 +176,14 @@
 
 },{"./calendar.model":4,"common/behaviors/languid-resize":2,"lodash":5}],4:[function(require,module,exports){
 (function() {
-  var Model, genesis, m, moment, monthNames,
+  var Model, genesis, genesisMoment, m, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
 
   moment = require('moment');
 
   genesis = 2009;
+
+  genesisMoment = moment("" + genesis + "-01-01", 'YYYY-MM-MM');
 
   monthNames = {
     '01': 'Jan',
@@ -207,6 +211,7 @@
     buildEmptyStructure: function() {
       var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
+      this.totalDays = moment().diff(genesisMoment, 'days');
       curYear = now.getFullYear();
       curMonth = now.getMonth() + 1;
       _results = [];

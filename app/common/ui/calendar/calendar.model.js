@@ -1,10 +1,12 @@
 (function() {
-  var Model, genesis, m, moment, monthNames,
+  var Model, genesis, genesisMoment, m, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
 
   moment = require('moment');
 
   genesis = 2009;
+
+  genesisMoment = moment("" + genesis + "-01-01", 'YYYY-MM-MM');
 
   monthNames = {
     '01': 'Jan',
@@ -32,6 +34,7 @@
     buildEmptyStructure: function() {
       var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
+      this.totalDays = moment().diff(genesisMoment, 'days');
       curYear = now.getFullYear();
       curMonth = now.getMonth() + 1;
       _results = [];

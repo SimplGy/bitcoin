@@ -13,6 +13,7 @@ moment      = require 'moment'
 
 # Genesis was 3 Jan 2009. Round to 1 Jan and assume there are no blocks before that.
 genesis = 2009
+genesisMoment = moment("#{genesis}-01-01", 'YYYY-MM-MM')
 monthNames = {
   '01': 'Jan'
   '02': 'Feb'
@@ -43,6 +44,7 @@ Model.prototype =
   # Adds the month name for convenience
   buildEmptyStructure: ->
     now = new Date()
+    @totalDays = moment().diff(genesisMoment, 'days')
     curYear  = now.getFullYear()
     curMonth = now.getMonth() + 1 # JS months are 0 indexed
     for year in [genesis .. curYear]
