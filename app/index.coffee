@@ -1,9 +1,8 @@
-blockDisplay = require 'common/ui/block-display/block-display'
-
+calendar = require 'common/ui/calendar/calendar'
 
 onReady = ->
   FastClick.attach document.body
-  blockDisplay.init()
+  calendar.init()
 
 
 if document.readyState != 'loading'

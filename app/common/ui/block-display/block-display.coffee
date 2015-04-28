@@ -11,8 +11,6 @@ blocksPerDay = blocksPerHour * 24
 
 
 init = ->
-  console.log 'BlockDisplay init'
-
   container = d3.select("body").append('div').attr 'class', 'block-display'
   blocks = new Blocks()
   blocks.onChange draw

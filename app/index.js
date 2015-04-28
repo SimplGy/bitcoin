@@ -1,11 +1,11 @@
 (function() {
-  var blockDisplay, onReady;
+  var calendar, onReady;
 
-  blockDisplay = require('common/ui/block-display/block-display');
+  calendar = require('common/ui/calendar/calendar');
 
   onReady = function() {
     FastClick.attach(document.body);
-    return blockDisplay.init();
+    return calendar.init();
   };
 
   if (document.readyState !== 'loading') {

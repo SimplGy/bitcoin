@@ -13,6 +13,12 @@ This is what people talk about when they say `block chain`. A confirmed block is
 
 
 
+## Instructions
+
+To run the project in development mode:
+
+    gulp
+
 
 
 
