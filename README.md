@@ -2,6 +2,29 @@
 
 > A real-time visualizer for the bitcoin blockchain
 
+I think a lot of people hear something about Bitcoin and wonder what it really is. I mean: it's not physically limited, it's not verified by a trusted and independent source--so what is it? How is the supply limited? Who verifies that Frank sent money to Sally?
+
+The best way to understand it is to visualize the data involved with some understanding attached.
+
+Many computers expend processing power to validate `blocks` of transactions. The verification of each block includes, by cryptographic hash, the work of all previous blocks. The genious of this is that as the chain of blocks grows, the difficutly of later manipulation grows too. Grows [exponentially](), as it turns out.
+
+This is what people talk about when they say `block chain`. A confirmed block is forever, and the block chain is the history of all confirmed blocks every agreed on by the community of nodes in the bitcoin network.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 This visualization shows the bitcoin blockchain. Recently confirmed blocks are at the top and older ones are at the bottom.
 
 Each rectangle is a single block of many transactions. Bitcoin processes about one block every 10 minutes.
@@ -27,6 +50,8 @@ The color represents how close it is to capacity in byte size. Blocks are limite
 - [ ] #build: rebuild js changes faster, incrementally.
 - [ ] Add a model layer with caching. Confirmed blocks are immutable and the caching layer can leverage that.
 - [ ] $_$: Add a donation address and QR code
+- [ ] Support showing the entire history of bitcoin using infinite scroll and incremental loading
+- [ ] Have one `day` (other timeframes? A week?) of history always zoomed in for greater detail
 - [ ] Support changing the api key so an expert user can make it work if massive traffic makes me hit the API limit
 - [ ] Ask the API providers for a free rate limit upgrade for this community project
 - [ ] Support infinite scroll with intelligent data requesting (fix height per day and request in days? fixed number of blocks per PX tall?)
