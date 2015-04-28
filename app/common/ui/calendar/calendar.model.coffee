@@ -1,12 +1,11 @@
-Moment      = require 'moment'
+moment      = require 'moment'
 
 # A data model that matches the needs of the calendar exactly
 # Stores data per day in this format:
 # {
-#   "2015-04": {
-#     "Apr"
-#     "28": [...], // Array of blocks for Apr 28th
-#     "27": [...]
+#   "2015-04-28": {
+#     month: "Apr"
+#     blocks: [...], // Array of blocks for Apr 28th
 #   }
 # }
 #
@@ -50,10 +49,11 @@ Model.prototype =
       endingMonth = if year is curYear then curMonth else 12
       for month in [1..endingMonth]
         if month < 10 then month = '0' + month
-        dateKey = "#{year}-#{month}"
-        @[dateKey] =
-          year: year
-          name: monthNames[month]
+        endingDay = moment("#{year}-#{month}", 'YYYY-MM').daysInMonth()
+        for day in [1..endingDay]
+          if day < 10 then day = '0' + day
+          dateKey = "#{year}-#{month}-#{day}"
+          @[dateKey] = month: monthNames[month]
 #          name: m('2009-04', 'YYYY-MM').format('MMM') # The name of this month
 
 
@@ -74,11 +74,9 @@ Model.prototype =
   # Only store months which have some data populated
   cacheSave: ->
     for own key, val of @
-      continue unless @_monthHasData val
+      continue unless val.blocks?
       localStorage?[key] = JSON.stringify val
 
-  # A month has data if the first or last month key is truthy
-  _monthHasData: (month) -> return month['01'] or month['29']
 
 
 
@@ -91,7 +89,7 @@ Model.prototype =
 
 m = new Model()
 window._cal = m # debugging
-window.m = Moment
+window.m = moment
 
 module.exports = m
 

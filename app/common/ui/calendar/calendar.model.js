@@ -1,8 +1,8 @@
 (function() {
-  var Model, Moment, genesis, m, monthNames,
+  var Model, genesis, m, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
 
-  Moment = require('moment');
+  moment = require('moment');
 
   genesis = 2009;
 
@@ -30,7 +30,7 @@
 
   Model.prototype = {
     buildEmptyStructure: function() {
-      var curMonth, curYear, dateKey, endingMonth, month, now, year, _i, _results;
+      var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
       curYear = now.getFullYear();
       curMonth = now.getMonth() + 1;
@@ -44,11 +44,21 @@
             if (month < 10) {
               month = '0' + month;
             }
-            dateKey = "" + year + "-" + month;
-            _results1.push(this[dateKey] = {
-              year: year,
-              name: monthNames[month]
-            });
+            endingDay = moment("" + year + "-" + month, 'YYYY-MM').daysInMonth();
+            _results1.push((function() {
+              var _k, _results2;
+              _results2 = [];
+              for (day = _k = 1; 1 <= endingDay ? _k <= endingDay : _k >= endingDay; day = 1 <= endingDay ? ++_k : --_k) {
+                if (day < 10) {
+                  day = '0' + day;
+                }
+                dateKey = "" + year + "-" + month + "-" + day;
+                _results2.push(this[dateKey] = {
+                  month: monthNames[month]
+                });
+              }
+              return _results2;
+            }).call(this));
           }
           return _results1;
         }).call(this));
@@ -78,15 +88,12 @@
       for (key in this) {
         if (!__hasProp.call(this, key)) continue;
         val = this[key];
-        if (!this._monthHasData(val)) {
+        if (val.blocks == null) {
           continue;
         }
         _results.push(typeof localStorage !== "undefined" && localStorage !== null ? localStorage[key] = JSON.stringify(val) : void 0);
       }
       return _results;
-    },
-    _monthHasData: function(month) {
-      return month['01'] || month['29'];
     }
   };
 
@@ -94,7 +101,7 @@
 
   window._cal = m;
 
-  window.m = Moment;
+  window.m = moment;
 
   module.exports = m;
 

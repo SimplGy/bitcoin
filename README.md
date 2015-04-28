@@ -11,7 +11,17 @@ Many computers expend processing power to validate `blocks` of transactions. The
 This is what people talk about when they say `block chain`. A confirmed block is forever, and the block chain is the history of all confirmed blocks every agreed on by the community of nodes in the bitcoin network.
 
 
+## Facts
 
+There is one block every 10 minutes, on average.
+
+This means there are:
+
+* 6 blocks per hour
+* 144 blocks per day
+* 52560 blocks per year
+
+For the forseeable future there will be less than 1,000,000 blocks, which is
 
 ## Instructions
 
