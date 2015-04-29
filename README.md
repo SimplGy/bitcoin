@@ -21,17 +21,7 @@ The color represents how close it is to capacity in byte size. Blocks are limite
 ![Image of UI](https://raw.githubusercontent.com/SimplGy/bitcoin-visualizer/master/docs/screen2015-04.png)
 
 
-## Facts
 
-There is one block every 10 minutes, on average.
-
-This means there are:
-
-* 6 blocks per hour
-* 144 blocks per day
-* 52560 blocks per year
-
-For the forseeable future there will be less than 1,000,000 blocks.
 
 ## Instructions
 
@@ -61,6 +51,7 @@ To run the project in development mode:
 - [ ] Have one `day` (other timeframes? A week?) of history always zoomed in for greater detail
 - [ ] Support changing the api key so an expert user can make it work if massive traffic makes me hit the API limit
 - [ ] Ask the API providers for a free rate limit upgrade for this community project
+- [ ] Show the text messages involved in the transactions. just a log style of what's said or something might be neat. https://chain.com/docs/v2/jquery/#bitcoin-block-op-returns
 - [ ] Support infinite scroll with intelligent data requesting (fix height per day and request in days? fixed number of blocks per PX tall?)
 - [ ] Consider: more interesting segmentation. Per day in local time? Responsive sizing? Other dimensions?
 - [ ] Pending block (shows a dotted/transparent appearance). says "pending, last confirmed block at DD"

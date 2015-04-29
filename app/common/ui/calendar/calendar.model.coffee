@@ -35,6 +35,7 @@ Model = ->
   @buildEmptyStructure()
   @cacheLoad()
   @cacheSave()
+  console.log 'calendar.model', @
   return undefined
 
 
@@ -44,7 +45,8 @@ Model.prototype =
   # Adds the month name for convenience
   buildEmptyStructure: ->
     now = new Date()
-    @totalDays = moment().diff(genesisMoment, 'days')
+    @totalDays  = moment().diff genesisMoment, 'days'
+    @totalWeeks = Math.ceil(@totalDays / 7) + 1
     curYear  = now.getFullYear()
     curMonth = now.getMonth() + 1 # JS months are 0 indexed
     for year in [genesis .. curYear]
@@ -81,7 +83,6 @@ Model.prototype =
 
 
 
-
 # Given a month in the format "2015-04", pull it out of localstorage.
 # TODO: request the data for the month if it's not in there.
 #getMonth = (str) ->
@@ -91,8 +92,6 @@ Model.prototype =
 
 m = new Model()
 window._cal = m # debugging
-window.m = moment
-
 module.exports = m
 
 

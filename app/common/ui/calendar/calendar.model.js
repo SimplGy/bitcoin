@@ -27,6 +27,7 @@
     this.buildEmptyStructure();
     this.cacheLoad();
     this.cacheSave();
+    console.log('calendar.model', this);
     return void 0;
   };
 
@@ -35,6 +36,7 @@
       var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
       this.totalDays = moment().diff(genesisMoment, 'days');
+      this.totalWeeks = Math.ceil(this.totalDays / 7) + 1;
       curYear = now.getFullYear();
       curMonth = now.getMonth() + 1;
       _results = [];
@@ -103,8 +105,6 @@
   m = new Model();
 
   window._cal = m;
-
-  window.m = moment;
 
   module.exports = m;
 

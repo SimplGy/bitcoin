@@ -4,6 +4,8 @@
 
   calendar = require('common/ui/calendar/calendar');
 
+  require('common/ui/bitcoin-tip/bitcoin-tip');
+
   onReady = function() {
     FastClick.attach(document.body);
     return calendar.init();
@@ -17,7 +19,7 @@
 
 }).call(this);
 
-},{"common/ui/calendar/calendar":4}],2:[function(require,module,exports){
+},{"common/ui/bitcoin-tip/bitcoin-tip":4,"common/ui/calendar/calendar":5}],2:[function(require,module,exports){
 (function() {
   var handlers, languidity, onLanguidResize, _;
 
@@ -47,7 +49,7 @@
 
 }).call(this);
 
-},{"lodash":6}],3:[function(require,module,exports){
+},{"lodash":7}],3:[function(require,module,exports){
 (function() {
   var css, onReady;
 
@@ -92,7 +94,53 @@
 
 },{}],4:[function(require,module,exports){
 (function() {
-  var Size, availableRows, calcVisibleRange, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
+  var address, attr, init, makeQr, sel;
+
+  attr = 'bitcoin-tip-address';
+
+  sel = "[" + attr + "]";
+
+  address = null;
+
+  makeQr = function(addr) {
+    return "https://chart.googleapis.com/chart?cht=qr&chl=bitcoin:" + addr + "?amount=0.02&choe=UTF-8&chs=300x300";
+  };
+
+  init = function() {
+    var el;
+    el = document.querySelector(sel);
+    if (!el) {
+      return console.warn("Can't create a tip button without an element " + sel);
+    }
+    address = el.getAttribute(attr);
+    if (!address) {
+      return console.warn("Can't make a meaningful tip button without an address", el);
+    }
+    el.className += ' bitcoin-tip';
+    el.href = makeQr(address);
+    return el.target = '_blank';
+  };
+
+  if (document.readyState !== 'loading') {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+
+}).call(this);
+
+},{}],5:[function(require,module,exports){
+
+/*
+  The Calendar is a view management object.
+  It displays calendar-shaped dom nodes and knows the following:
+  - [x] What rows are currently visible
+  - [ ] What days are currently displayed
+  - [ ] How each day corresponds with a dom node
+ */
+
+(function() {
+  var Size, availableEls, calcVisibleRange, container, dayElsByDate, daysPerRow, init, languidResize, maxDayHeight, model, onPause, onResize, onScroll, previousScrollY, render, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ = require('lodash');
@@ -107,11 +155,15 @@
 
   container = null;
 
-  rows = null;
+  rowEls = null;
 
-  availableRows = null;
+  availableEls = null;
 
-  maxDayHeight = 100;
+  dayElsByDate = null;
+
+  rowElsByDate = null;
+
+  maxDayHeight = 90;
 
   daysPerRow = 7;
 
@@ -120,10 +172,9 @@
   Size = function() {
     this.dayWidth = Math.floor((1 / daysPerRow) * container.offsetWidth);
     this.dayHeight = Math.min(this.dayWidth, maxDayHeight);
-    this.cols = daysPerRow;
     this.topOffset = container.offsetTop;
+    this.cols = daysPerRow;
     this.rows = Math.ceil(window.innerHeight / this.dayHeight);
-    this.totalRows = Math.ceil(model.totalDays / 7) + 1;
     return console.log(this);
   };
 
@@ -139,19 +190,19 @@
   resetElements = function() {
     var day, dayOfWeek, i, row, _i, _results;
     container.innerHTML = '';
-    availableRows = [];
-    rows = {};
-    container.style.height = "" + (size.totalRows * size.dayHeight) + "px";
+    availableEls = [];
+    rowEls = {};
+    container.style.height = "" + (model.totalWeeks * size.dayHeight) + "px";
     i = 0;
     _results = [];
     while (i++ <= size.rows * 2) {
       row = document.createElement('ol');
-      for (dayOfWeek = _i = 1; _i <= 7; dayOfWeek = ++_i) {
+      for (dayOfWeek = _i = 0; _i <= 6; dayOfWeek = ++_i) {
         day = document.createElement('li');
         day.className = "day-" + dayOfWeek;
         row.appendChild(day);
       }
-      availableRows.push(row);
+      availableEls.push(row);
       _results.push(container.appendChild(row));
     }
     return _results;
@@ -160,24 +211,24 @@
   render = function() {
     var idx, row, visibleRange, _i, _len, _results;
     visibleRange = calcVisibleRange();
-    for (idx in rows) {
-      row = rows[idx];
+    for (idx in rowEls) {
+      row = rowEls[idx];
       if (__indexOf.call(visibleRange, idx) < 0) {
-        availableRows.push(row);
-        row.style.top = null;
-        delete rows[idx];
+        availableEls.push(row);
+        row.style.top = '';
+        delete rowEls[idx];
       }
     }
     _results = [];
     for (_i = 0, _len = visibleRange.length; _i < _len; _i++) {
       idx = visibleRange[_i];
-      row = availableRows.pop();
+      row = availableEls.pop();
       if (!row) {
-        console.warn("No row available for " + idx, availableRows);
+        console.warn("No row available for " + idx, availableEls);
         continue;
       }
       row.style.top = "" + (idx * size.dayHeight) + "px";
-      _results.push(rows[idx] = row);
+      _results.push(rowEls[idx] = row);
     }
     return _results;
   };
@@ -193,7 +244,7 @@
       start -= size.rows - 1;
     }
     previousScrollY = scrollY;
-    end = Math.min(end, size.totalRows);
+    end = Math.min(end, model.totalWeeks);
     start = Math.max(start, 0);
     console.log("calcVisibleRange() " + (end - start) + ": [" + start + "-" + end + "]");
     return (function() {
@@ -211,7 +262,14 @@
     return render();
   };
 
-  onScroll = render;
+  onScroll = function() {
+    render();
+    return onPause();
+  };
+
+  onPause = _.debounce(function() {
+    return console.log("paused on " + (calcVisibleRange()));
+  }, 100);
 
   module.exports = {
     init: init
@@ -219,7 +277,7 @@
 
 }).call(this);
 
-},{"./calendar.model":5,"common/behaviors/languid-resize":2,"common/behaviors/stylesheet":3,"lodash":6}],5:[function(require,module,exports){
+},{"./calendar.model":6,"common/behaviors/languid-resize":2,"common/behaviors/stylesheet":3,"lodash":7}],6:[function(require,module,exports){
 (function() {
   var Model, genesis, genesisMoment, m, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
@@ -249,6 +307,7 @@
     this.buildEmptyStructure();
     this.cacheLoad();
     this.cacheSave();
+    console.log('calendar.model', this);
     return void 0;
   };
 
@@ -257,6 +316,7 @@
       var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
       this.totalDays = moment().diff(genesisMoment, 'days');
+      this.totalWeeks = Math.ceil(this.totalDays / 7) + 1;
       curYear = now.getFullYear();
       curMonth = now.getMonth() + 1;
       _results = [];
@@ -326,13 +386,11 @@
 
   window._cal = m;
 
-  window.m = moment;
-
   module.exports = m;
 
 }).call(this);
 
-},{"moment":7}],6:[function(require,module,exports){
+},{"moment":8}],7:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12502,7 +12560,7 @@
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.2
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors

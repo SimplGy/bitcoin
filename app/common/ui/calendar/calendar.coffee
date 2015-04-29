@@ -1,25 +1,36 @@
+###
+  The Calendar is a view management object.
+  It displays calendar-shaped dom nodes and knows the following:
+  - [x] What rows are currently visible
+  - [ ] What days are currently displayed
+  - [ ] How each day corresponds with a dom node
+###
+
 _             = require 'lodash'
 model         = require './calendar.model'
 languidResize = require 'common/behaviors/languid-resize'
 stylesheet    = require 'common/behaviors/stylesheet'
 
 
+# --------------------------------------------------------- Variables
+size = null               # An object which has precalculated the amounts and sizes of days and weeks based on screen size
+container = null          # The containing `.calendar` dom element
+rowEls = null             # A hash of rendered row DOM elements, keyed by index
+availableEls = null       # An array of DOM elements that are off screen and can be reused
+dayElsByDate = null
+rowElsByDate = null
+maxDayHeight = 90
+daysPerRow = 7            # 7 days, so `row === week`
+previousScrollY = 0       # For calculating scroll direction
 
-size = null
-container = null
-rows = null               # A hash of rendered row DOM elements, keyed by index
-availableRows = null      # An array of DOM elements that are off screen and can be reused
-maxDayHeight = 100
-daysPerRow = 7            # A week
-previousScrollY = 0
+
 
 Size = ->
   @dayWidth = Math.floor (1/daysPerRow) * container.offsetWidth # because window.innerWidth doesn't include the scroll bar
   @dayHeight = Math.min @dayWidth, maxDayHeight
-  @cols = daysPerRow
   @topOffset = container.offsetTop
+  @cols = daysPerRow
   @rows = Math.ceil window.innerHeight / @dayHeight
-  @totalRows = Math.ceil(model.totalDays / 7) + 1
   console.log @
 
 init = ->
@@ -33,17 +44,17 @@ init = ->
 # Reset the dom elements. This should only need to be done when the screen size changes, because this means the number of elements that fit will have changed.
 resetElements = ->
   container.innerHTML = ''
-  availableRows = []
-  rows = {}
-  container.style.height = "#{size.totalRows * size.dayHeight}px"
+  availableEls = []
+  rowEls = {}
+  container.style.height = "#{model.totalWeeks * size.dayHeight}px"
   i = 0
   while i++ <= size.rows * 2 # Create twice as many rows as will fit on screen
     row = document.createElement 'ol'
-    for dayOfWeek in [1..7]
+    for dayOfWeek in [0..6]
       day = document.createElement 'li'
       day.className = "day-#{dayOfWeek}"
       row.appendChild day
-    availableRows.push row
+    availableEls.push row
     container.appendChild row
 
 
@@ -55,24 +66,24 @@ render = ->
   visibleRange = calcVisibleRange()
 
   # What is off screen? mark it unrendered
-  for idx, row of rows
+  for idx, row of rowEls
     unless idx in visibleRange
-      availableRows.push row
-      row.style.top = null
-      delete rows[idx]
+      availableEls.push row
+      row.style.top = ''
+      delete rowEls[idx]
 
   # What is on screen but not yet rendered? render it
   for idx in visibleRange
-    row = availableRows.pop()
+    row = availableEls.pop()
     unless row
-      console.warn "No row available for #{idx}", availableRows
+      console.warn "No row available for #{idx}", availableEls
       continue
     row.style.top = "#{idx * size.dayHeight}px"
 #    console.log "Set top of row #{idx} to #{row.style.top}"
-    rows[idx] = row
+    rowEls[idx] = row
 
 #  console.log 'render()',
-#    available: availableRows.length
+#    available: availableEls.length
 #    rendered: Object.keys rows
 #    domRows: container.children.length
 
@@ -92,8 +103,7 @@ calcVisibleRange = ->
   previousScrollY = scrollY
 
   # Bound the start and end by the total number of rows in the data
-#  totalRows = Math.ceil(model.totalDays / 7) + 1
-  end = Math.min end, size.totalRows
+  end = Math.min end, model.totalWeeks
   start = Math.max start, 0
 
   console.log "calcVisibleRange() #{end - start}: [#{start}-#{end}]"
@@ -110,13 +120,13 @@ onResize = ->
   resetElements()
   render()
 
-onScroll = render
-#onScroll = _.debounce ->
-#  render()
-#, 20
+onScroll = ->
+  render()
+  onPause()
 
-
-
+onPause = _.debounce ->
+  console.log "paused on #{calcVisibleRange()}"
+, 100
 
 
 #  container = d3.select("body").append('ol').attr 'class', 'calendar'

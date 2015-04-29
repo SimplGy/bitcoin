@@ -1,5 +1,14 @@
+
+/*
+  The Calendar is a view management object.
+  It displays calendar-shaped dom nodes and knows the following:
+  - [x] What rows are currently visible
+  - [ ] What days are currently displayed
+  - [ ] How each day corresponds with a dom node
+ */
+
 (function() {
-  var Size, availableRows, calcVisibleRange, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
+  var Size, availableEls, calcVisibleRange, container, dayElsByDate, daysPerRow, init, languidResize, maxDayHeight, model, onPause, onResize, onScroll, previousScrollY, render, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ = require('lodash');
@@ -14,11 +23,15 @@
 
   container = null;
 
-  rows = null;
+  rowEls = null;
 
-  availableRows = null;
+  availableEls = null;
 
-  maxDayHeight = 100;
+  dayElsByDate = null;
+
+  rowElsByDate = null;
+
+  maxDayHeight = 90;
 
   daysPerRow = 7;
 
@@ -27,10 +40,9 @@
   Size = function() {
     this.dayWidth = Math.floor((1 / daysPerRow) * container.offsetWidth);
     this.dayHeight = Math.min(this.dayWidth, maxDayHeight);
-    this.cols = daysPerRow;
     this.topOffset = container.offsetTop;
+    this.cols = daysPerRow;
     this.rows = Math.ceil(window.innerHeight / this.dayHeight);
-    this.totalRows = Math.ceil(model.totalDays / 7) + 1;
     return console.log(this);
   };
 
@@ -46,19 +58,19 @@
   resetElements = function() {
     var day, dayOfWeek, i, row, _i, _results;
     container.innerHTML = '';
-    availableRows = [];
-    rows = {};
-    container.style.height = "" + (size.totalRows * size.dayHeight) + "px";
+    availableEls = [];
+    rowEls = {};
+    container.style.height = "" + (model.totalWeeks * size.dayHeight) + "px";
     i = 0;
     _results = [];
     while (i++ <= size.rows * 2) {
       row = document.createElement('ol');
-      for (dayOfWeek = _i = 1; _i <= 7; dayOfWeek = ++_i) {
+      for (dayOfWeek = _i = 0; _i <= 6; dayOfWeek = ++_i) {
         day = document.createElement('li');
         day.className = "day-" + dayOfWeek;
         row.appendChild(day);
       }
-      availableRows.push(row);
+      availableEls.push(row);
       _results.push(container.appendChild(row));
     }
     return _results;
@@ -67,24 +79,24 @@
   render = function() {
     var idx, row, visibleRange, _i, _len, _results;
     visibleRange = calcVisibleRange();
-    for (idx in rows) {
-      row = rows[idx];
+    for (idx in rowEls) {
+      row = rowEls[idx];
       if (__indexOf.call(visibleRange, idx) < 0) {
-        availableRows.push(row);
-        row.style.top = null;
-        delete rows[idx];
+        availableEls.push(row);
+        row.style.top = '';
+        delete rowEls[idx];
       }
     }
     _results = [];
     for (_i = 0, _len = visibleRange.length; _i < _len; _i++) {
       idx = visibleRange[_i];
-      row = availableRows.pop();
+      row = availableEls.pop();
       if (!row) {
-        console.warn("No row available for " + idx, availableRows);
+        console.warn("No row available for " + idx, availableEls);
         continue;
       }
       row.style.top = "" + (idx * size.dayHeight) + "px";
-      _results.push(rows[idx] = row);
+      _results.push(rowEls[idx] = row);
     }
     return _results;
   };
@@ -100,7 +112,7 @@
       start -= size.rows - 1;
     }
     previousScrollY = scrollY;
-    end = Math.min(end, size.totalRows);
+    end = Math.min(end, model.totalWeeks);
     start = Math.max(start, 0);
     console.log("calcVisibleRange() " + (end - start) + ": [" + start + "-" + end + "]");
     return (function() {
@@ -118,7 +130,14 @@
     return render();
   };
 
-  onScroll = render;
+  onScroll = function() {
+    render();
+    return onPause();
+  };
+
+  onPause = _.debounce(function() {
+    return console.log("paused on " + (calcVisibleRange()));
+  }, 100);
 
   module.exports = {
     init: init
