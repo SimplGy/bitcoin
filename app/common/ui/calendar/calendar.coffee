@@ -19,6 +19,7 @@ Size = ->
   @cols = daysPerRow
   @topOffset = container.offsetTop
   @rows = Math.ceil window.innerHeight / @dayHeight
+  @totalRows = Math.ceil(model.totalDays / 7) + 1
   console.log @
 
 init = ->
@@ -34,8 +35,9 @@ resetElements = ->
   container.innerHTML = ''
   availableRows = []
   rows = {}
+  container.style.height = "#{size.totalRows * size.dayHeight}px"
   i = 0
-  while i++ < size.rows * 2 # Create twice as many rows as will fit on screen
+  while i++ <= size.rows * 2 # Create twice as many rows as will fit on screen
     row = document.createElement 'ol'
     for dayOfWeek in [1..7]
       day = document.createElement 'li'
@@ -49,50 +51,54 @@ resetElements = ->
 # Look at the scroll position to determine which row indexes to draw.
 # Use a pool of avaialable offscreen row elements to draw with
 render = ->
+
+  visibleRange = calcVisibleRange()
+
+  # What is off screen? mark it unrendered
+  for idx, row of rows
+    unless idx in visibleRange
+      availableRows.push row
+      row.style.top = null
+      delete rows[idx]
+
+  # What is on screen but not yet rendered? render it
+  for idx in visibleRange
+    row = availableRows.pop()
+    unless row
+      console.warn "No row available for #{idx}", availableRows
+      continue
+    row.style.top = "#{idx * size.dayHeight}px"
+#    console.log "Set top of row #{idx} to #{row.style.top}"
+    rows[idx] = row
+
+#  console.log 'render()',
+#    available: availableRows.length
+#    rendered: Object.keys rows
+#    domRows: container.children.length
+
+
+# Calculate a visible range of rows based on sizing data, scroll position, and window height
+# Returns a range of indices
+calcVisibleRange = ->
   scrollY = window.scrollY
   start = Math.floor (scrollY - size.topOffset) / size.dayHeight
   end = start + Math.ceil (window.innerHeight + size.topOffset) / size.dayHeight
-  # Limit the end by the total number of rows in the data
-  totalRows = Math.ceil(model.totalDays / 7) + 1
-  end = Math.min end, totalRows
 
-  # Adjust the visible range to draw more ahead in the direction of the scroll
-#  scrollDirection = if scrollY > previousScrollY then 1 else -1
+  # Adjust the visible range to draw more rows in the direction of the scroll
   if scrollY > previousScrollY
     end   += (size.rows - 1)
   else
     start -= (size.rows - 1)
   previousScrollY = scrollY
 
-  visibleRange = [start..end]
+  # Bound the start and end by the total number of rows in the data
+#  totalRows = Math.ceil(model.totalDays / 7) + 1
+  end = Math.min end, size.totalRows
+  start = Math.max start, 0
 
-  # What is off screen? mark it unrendered
-  for idx, row of rows
-    unless idx in visibleRange
-      availableRows.push row
-      delete rows[idx]
+  console.log "calcVisibleRange() #{end - start}: [#{start}-#{end}]"
+  return [start..end]
 
-  # What is on screen but not yet rendered? render it
-  for idx in visibleRange
-    continue if idx < 0 # asked to draw, but outside of legal range
-    row = availableRows.pop()
-    unless row
-      console.warn "No row available for #{idx}", availableRows
-      continue
-    row.style.top = "#{idx * size.dayHeight}px"
-    console.log "Set top of row #{idx} to #{row.style.top}"
-    rows[idx] = row
-
-  console.log 'render()',
-    visible: "#{end - start}: [#{start}-#{end}]"
-    available: availableRows.length
-    rendered: Object.keys rows
-    domRows: container.children.length
-
-#  if (Object.keys(rows).length isnt container.children.length)
-#    console.warn "Number of rows in data structure doesn't match count in DOM",
-#      rows: rows
-#      rowEls: container.children
 
 
 # ---------------------------------------------------- Event Handlers

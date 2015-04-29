@@ -1,5 +1,5 @@
 (function() {
-  var Size, availableRows, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
+  var Size, availableRows, calcVisibleRange, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ = require('lodash');
@@ -30,6 +30,7 @@
     this.cols = daysPerRow;
     this.topOffset = container.offsetTop;
     this.rows = Math.ceil(window.innerHeight / this.dayHeight);
+    this.totalRows = Math.ceil(model.totalDays / 7) + 1;
     return console.log(this);
   };
 
@@ -47,9 +48,10 @@
     container.innerHTML = '';
     availableRows = [];
     rows = {};
+    container.style.height = "" + (size.totalRows * size.dayHeight) + "px";
     i = 0;
     _results = [];
-    while (i++ < size.rows * 2) {
+    while (i++ <= size.rows * 2) {
       row = document.createElement('ol');
       for (dayOfWeek = _i = 1; _i <= 7; dayOfWeek = ++_i) {
         day = document.createElement('li');
@@ -63,50 +65,49 @@
   };
 
   render = function() {
-    var end, idx, row, scrollY, start, totalRows, visibleRange, _i, _j, _len, _results;
-    scrollY = window.scrollY;
-    start = Math.floor((scrollY - size.topOffset) / size.dayHeight);
-    end = start + Math.ceil((window.innerHeight + size.topOffset) / size.dayHeight);
-    totalRows = Math.ceil(model.totalDays / 7) + 1;
-    end = Math.min(end, totalRows);
-    if (scrollY > previousScrollY) {
-      end += size.rows - 1;
-    } else {
-      start -= size.rows - 1;
-    }
-    previousScrollY = scrollY;
-    visibleRange = (function() {
-      _results = [];
-      for (var _i = start; start <= end ? _i <= end : _i >= end; start <= end ? _i++ : _i--){ _results.push(_i); }
-      return _results;
-    }).apply(this);
+    var idx, row, visibleRange, _i, _len, _results;
+    visibleRange = calcVisibleRange();
     for (idx in rows) {
       row = rows[idx];
       if (__indexOf.call(visibleRange, idx) < 0) {
         availableRows.push(row);
+        row.style.top = null;
         delete rows[idx];
       }
     }
-    for (_j = 0, _len = visibleRange.length; _j < _len; _j++) {
-      idx = visibleRange[_j];
-      if (idx < 0) {
-        continue;
-      }
+    _results = [];
+    for (_i = 0, _len = visibleRange.length; _i < _len; _i++) {
+      idx = visibleRange[_i];
       row = availableRows.pop();
       if (!row) {
         console.warn("No row available for " + idx, availableRows);
         continue;
       }
       row.style.top = "" + (idx * size.dayHeight) + "px";
-      console.log("Set top of row " + idx + " to " + row.style.top);
-      rows[idx] = row;
+      _results.push(rows[idx] = row);
     }
-    return console.log('render()', {
-      visible: "" + (end - start) + ": [" + start + "-" + end + "]",
-      available: availableRows.length,
-      rendered: Object.keys(rows),
-      domRows: container.children.length
-    });
+    return _results;
+  };
+
+  calcVisibleRange = function() {
+    var end, scrollY, start, _i, _results;
+    scrollY = window.scrollY;
+    start = Math.floor((scrollY - size.topOffset) / size.dayHeight);
+    end = start + Math.ceil((window.innerHeight + size.topOffset) / size.dayHeight);
+    if (scrollY > previousScrollY) {
+      end += size.rows - 1;
+    } else {
+      start -= size.rows - 1;
+    }
+    previousScrollY = scrollY;
+    end = Math.min(end, size.totalRows);
+    start = Math.max(start, 0);
+    console.log("calcVisibleRange() " + (end - start) + ": [" + start + "-" + end + "]");
+    return (function() {
+      _results = [];
+      for (var _i = start; start <= end ? _i <= end : _i >= end; start <= end ? _i++ : _i--){ _results.push(_i); }
+      return _results;
+    }).apply(this);
   };
 
   onResize = function() {
