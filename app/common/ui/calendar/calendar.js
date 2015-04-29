@@ -1,24 +1,26 @@
 (function() {
-  var Size, availableRows, container, daysPerRow, init, languidResize, markOffScreenRows, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, _,
+  var Size, availableRows, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  _ = require('lodash');
 
   model = require('./calendar.model');
 
   languidResize = require('common/behaviors/languid-resize');
 
-  _ = require('lodash');
-
-  maxDayHeight = 100;
+  stylesheet = require('common/behaviors/stylesheet');
 
   size = null;
 
   container = null;
 
+  rows = null;
+
+  availableRows = null;
+
+  maxDayHeight = 100;
+
   daysPerRow = 7;
-
-  rows = {};
-
-  availableRows = [];
 
   previousScrollY = 0;
 
@@ -37,21 +39,18 @@
     document.body.appendChild(container);
     languidResize.on(onResize);
     window.onscroll = onScroll;
-    return _.defer(function() {
-      onResize();
-      return render();
-    });
+    return _.defer(onResize);
   };
 
   resetElements = function() {
     var day, dayOfWeek, i, row, _i, _results;
     container.innerHTML = '';
+    availableRows = [];
+    rows = {};
     i = 0;
     _results = [];
     while (i++ < size.rows * 2) {
       row = document.createElement('ol');
-      row.className = 'row';
-      row.style.height = "" + size.dayHeight + "px";
       for (dayOfWeek = _i = 1; _i <= 7; dayOfWeek = ++_i) {
         day = document.createElement('li');
         day.className = "day-" + dayOfWeek;
@@ -99,6 +98,7 @@
         continue;
       }
       row.style.top = "" + (idx * size.dayHeight) + "px";
+      console.log("Set top of row " + idx + " to " + row.style.top);
       rows[idx] = row;
     }
     return console.log('render()', {
@@ -109,11 +109,12 @@
     });
   };
 
-  markOffScreenRows = function(visibleRange) {};
-
   onResize = function() {
     size = new Size();
-    return resetElements();
+    stylesheet.remove(".calendar ol");
+    stylesheet.add(".calendar ol", "height: " + size.dayHeight + "px;");
+    resetElements();
+    return render();
   };
 
   onScroll = render;

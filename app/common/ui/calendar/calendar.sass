@@ -6,23 +6,24 @@
   background: white
   min-height: 9999px // make sure there's a scroll bar there
 
-  .row, li
+  ol, li
     position: absolute
     top: 0
     left: 0
 
   // Row. A container for a week
-  .row
+  ol
     width: 100%
+    top: -9999px
 
   // One day in the calendar
   li
     display: block
     width: percentage(1/7)
-    box-shadow: inset 0 0 1px $black20
-    background-color: $black05
+    box-shadow: inset 0 0 2px $black20
     height: 100% // of the row it's in
     // These indices refer to a day of the week. Sunday is 1.
+    //&li:nth-child(odd)
     &.day-1
       left: 0
     &.day-2
@@ -37,8 +38,6 @@
       left: percentage(1/7 * 5)
     &.day-7
       left: percentage(1/7 * 6)
-
-
 
 
 

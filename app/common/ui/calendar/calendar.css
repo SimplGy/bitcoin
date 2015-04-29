@@ -2,17 +2,17 @@
   position: relative;
   background: white;
   min-height: 9999px; }
-  .calendar .row, .calendar li {
+  .calendar ol, .calendar li {
     position: absolute;
     top: 0;
     left: 0; }
-  .calendar .row {
-    width: 100%; }
+  .calendar ol {
+    width: 100%;
+    top: -9999px; }
   .calendar li {
     display: block;
     width: 14.28571%;
-    box-shadow: inset 0 0 1px #cccccc;
-    background-color: #f2f2f2;
+    box-shadow: inset 0 0 2px #cccccc;
     height: 100%; }
     .calendar li.day-1 {
       left: 0; }

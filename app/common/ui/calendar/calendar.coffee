@@ -1,15 +1,16 @@
-model = require './calendar.model'
+_             = require 'lodash'
+model         = require './calendar.model'
 languidResize = require 'common/behaviors/languid-resize'
-_ = require 'lodash'
+stylesheet    = require 'common/behaviors/stylesheet'
 
 
 
-maxDayHeight = 100
 size = null
 container = null
-daysPerRow = 7 # A week
-rows = {} # A hash of rendered row DOM elements, keyed by index
-availableRows = [] # An array of DOM elements that are off screen and can be reused
+rows = null               # A hash of rendered row DOM elements, keyed by index
+availableRows = null      # An array of DOM elements that are off screen and can be reused
+maxDayHeight = 100
+daysPerRow = 7            # A week
 previousScrollY = 0
 
 Size = ->
@@ -26,21 +27,16 @@ init = ->
   document.body.appendChild container
   languidResize.on onResize
   window.onscroll = onScroll
-  _.defer -> # Don't measure until the container is in the dom
-    onResize()
-    render()
+  _.defer onResize # Don't measure until the container is in the dom
 
 # Reset the dom elements. This should only need to be done when the screen size changes, because this means the number of elements that fit will have changed.
 resetElements = ->
   container.innerHTML = ''
-  # Size the container to fit all the days in the data set
-#  totalRows = Math.ceil(model.totalDays / 7) + 1
-#  container.style.height = "#{totalRows * size.dayHeight}px"
+  availableRows = []
+  rows = {}
   i = 0
   while i++ < size.rows * 2 # Create twice as many rows as will fit on screen
     row = document.createElement 'ol'
-    row.className = 'row'
-    row.style.height = "#{size.dayHeight}px"
     for dayOfWeek in [1..7]
       day = document.createElement 'li'
       day.className = "day-#{dayOfWeek}"
@@ -51,7 +47,7 @@ resetElements = ->
 
 
 # Look at the scroll position to determine which row indexes to draw.
-# Add those dom elements, TODO: remove old ones
+# Use a pool of avaialable offscreen row elements to draw with
 render = ->
   scrollY = window.scrollY
   start = Math.floor (scrollY - size.topOffset) / size.dayHeight
@@ -78,13 +74,13 @@ render = ->
 
   # What is on screen but not yet rendered? render it
   for idx in visibleRange
-    continue if idx < 0
+    continue if idx < 0 # asked to draw, but outside of legal range
     row = availableRows.pop()
     unless row
       console.warn "No row available for #{idx}", availableRows
       continue
     row.style.top = "#{idx * size.dayHeight}px"
-#    console.log "Set top of row #{idx} to #{row.style.top}"
+    console.log "Set top of row #{idx} to #{row.style.top}"
     rows[idx] = row
 
   console.log 'render()',
@@ -98,25 +94,15 @@ render = ->
 #      rows: rows
 #      rowEls: container.children
 
-# Remove any old rows
-# Rows are old if they are in the rows cache but not in the new range
-markOffScreenRows = (visibleRange) ->
-#  renderedRange = Object.keys rows
-#  expired = _.difference renderedRange, newRange
-#  console.log "cleanUp", expired
-#  for idx in expired
-#    el = rows[idx]
-
-
-
-
-
 
 # ---------------------------------------------------- Event Handlers
 
 onResize = ->
   size = new Size()
+  stylesheet.remove ".calendar ol"
+  stylesheet.add    ".calendar ol", "height: #{size.dayHeight}px;"
   resetElements()
+  render()
 
 onScroll = render
 #onScroll = _.debounce ->

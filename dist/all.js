@@ -17,7 +17,7 @@
 
 }).call(this);
 
-},{"common/ui/calendar/calendar":3}],2:[function(require,module,exports){
+},{"common/ui/calendar/calendar":4}],2:[function(require,module,exports){
 (function() {
   var handlers, languidity, onLanguidResize, _;
 
@@ -47,28 +47,73 @@
 
 }).call(this);
 
-},{"lodash":5}],3:[function(require,module,exports){
+},{"lodash":6}],3:[function(require,module,exports){
 (function() {
-  var Size, availableRows, container, daysPerRow, init, languidResize, markOffScreenRows, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, _,
+  var css, onReady;
+
+  css = null;
+
+  onReady = function() {
+    css = document.createElement('style');
+    css.type = "text/css";
+    return document.body.appendChild(css);
+  };
+
+  if (document.readyState !== 'loading') {
+    onReady();
+  } else {
+    document.addEventListener('DOMContentLoaded', onReady);
+  }
+
+  module.exports = {
+    add: function(selector, rules) {
+      css.innerHTML += "" + selector + " { " + rules + " }\n";
+      return selector;
+    },
+    remove: function(selector) {
+      var i, line, lines, removeCount;
+      lines = css.innerHTML.split('\n');
+      i = lines.length - 1;
+      removeCount = 0;
+      while (i >= 0) {
+        line = lines[i];
+        if (line.indexOf("" + selector + " { ") !== -1) {
+          lines.splice(i, 1);
+          removeCount++;
+        }
+        i--;
+      }
+      css.innerHTML = lines.join('\n');
+      return removeCount;
+    }
+  };
+
+}).call(this);
+
+},{}],4:[function(require,module,exports){
+(function() {
+  var Size, availableRows, container, daysPerRow, init, languidResize, maxDayHeight, model, onResize, onScroll, previousScrollY, render, resetElements, rows, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  _ = require('lodash');
 
   model = require('./calendar.model');
 
   languidResize = require('common/behaviors/languid-resize');
 
-  _ = require('lodash');
-
-  maxDayHeight = 100;
+  stylesheet = require('common/behaviors/stylesheet');
 
   size = null;
 
   container = null;
 
+  rows = null;
+
+  availableRows = null;
+
+  maxDayHeight = 100;
+
   daysPerRow = 7;
-
-  rows = {};
-
-  availableRows = [];
 
   previousScrollY = 0;
 
@@ -87,21 +132,18 @@
     document.body.appendChild(container);
     languidResize.on(onResize);
     window.onscroll = onScroll;
-    return _.defer(function() {
-      onResize();
-      return render();
-    });
+    return _.defer(onResize);
   };
 
   resetElements = function() {
     var day, dayOfWeek, i, row, _i, _results;
     container.innerHTML = '';
+    availableRows = [];
+    rows = {};
     i = 0;
     _results = [];
     while (i++ < size.rows * 2) {
       row = document.createElement('ol');
-      row.className = 'row';
-      row.style.height = "" + size.dayHeight + "px";
       for (dayOfWeek = _i = 1; _i <= 7; dayOfWeek = ++_i) {
         day = document.createElement('li');
         day.className = "day-" + dayOfWeek;
@@ -149,6 +191,7 @@
         continue;
       }
       row.style.top = "" + (idx * size.dayHeight) + "px";
+      console.log("Set top of row " + idx + " to " + row.style.top);
       rows[idx] = row;
     }
     return console.log('render()', {
@@ -159,11 +202,12 @@
     });
   };
 
-  markOffScreenRows = function(visibleRange) {};
-
   onResize = function() {
     size = new Size();
-    return resetElements();
+    stylesheet.remove(".calendar ol");
+    stylesheet.add(".calendar ol", "height: " + size.dayHeight + "px;");
+    resetElements();
+    return render();
   };
 
   onScroll = render;
@@ -174,7 +218,7 @@
 
 }).call(this);
 
-},{"./calendar.model":4,"common/behaviors/languid-resize":2,"lodash":5}],4:[function(require,module,exports){
+},{"./calendar.model":5,"common/behaviors/languid-resize":2,"common/behaviors/stylesheet":3,"lodash":6}],5:[function(require,module,exports){
 (function() {
   var Model, genesis, genesisMoment, m, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
@@ -287,7 +331,7 @@
 
 }).call(this);
 
-},{"moment":6}],5:[function(require,module,exports){
+},{"moment":7}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12457,7 +12501,7 @@
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.2
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
