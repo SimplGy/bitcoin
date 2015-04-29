@@ -29,9 +29,13 @@ To run the project in development mode:
 
     gulp
 
-To run tests:
+Run tests one time:
 
-    npm test
+    npm run test-once
+
+Run a watcher that rebuilds the test package and runs tests whenever a test file changes:
+
+    npm run test-watch
 
 
 

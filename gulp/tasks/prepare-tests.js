@@ -19,7 +19,7 @@
     console.log("Found " + testFiles.length + " test files");
     return browserify({
       entries: testFiles,
-      paths: ['./node_modules', './app/']
+      paths: ['./node_modules', './app/', './test/']
     }).bundle().pipe(source('test.js')).pipe(plumber()).pipe(gulp.dest('./dist/'));
   };
 

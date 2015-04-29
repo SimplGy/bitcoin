@@ -13,7 +13,11 @@ task = ->
   console.log "Found #{testFiles.length} test files"
   browserify(
     entries: testFiles
-    paths: [ './node_modules','./app/' ] # https://github.com/greypants/gulp-starter/issues/17
+    paths: [ # https://github.com/greypants/gulp-starter/issues/17
+      './node_modules'
+      './app/'
+      './test/'
+    ]
   )
   .bundle()
   .pipe( source('test.js') )

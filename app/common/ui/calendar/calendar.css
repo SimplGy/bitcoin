@@ -15,8 +15,15 @@
     display: block;
     width: 14.28571%;
     box-shadow: inset 0 0 2px #cccccc;
-    background-color: rgba(0, 0, 0, 0.05);
-    height: 100%; }
+    background-color: #f2f2f2;
+    height: 100%;
+    color: #cccccc;
+    font-size: 12px;
+    line-height: 3;
+    text-align: center;
+    cursor: pointer; }
+    .calendar li:hover {
+      color: rgba(0, 0, 0, 0.6); }
   .calendar .day-0 {
     left: 0%; }
   .calendar .day-1 {

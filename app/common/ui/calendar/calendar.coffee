@@ -10,6 +10,7 @@ _             = require 'lodash'
 model         = require './calendar.model'
 languidResize = require 'common/behaviors/languid-resize'
 stylesheet    = require 'common/behaviors/stylesheet'
+moment        = require 'moment'
 
 
 # --------------------------------------------------------- Variables
@@ -31,7 +32,7 @@ Size = ->
   @topOffset = container.offsetTop
   @cols = daysPerRow
   @rows = Math.ceil window.innerHeight / @dayHeight
-  console.log @
+#  console.log @
 
 init = ->
   container = document.createElement 'div'
@@ -66,11 +67,7 @@ render = ->
   visibleRange = calcVisibleRange()
 
   # What is off screen? mark it unrendered
-  for idx, row of rowEls
-    unless idx in visibleRange
-      availableEls.push row
-      row.style.top = ''
-      delete rowEls[idx]
+  cleanUp visibleRange
 
   # What is on screen but not yet rendered? render it
   for idx in visibleRange
@@ -78,14 +75,46 @@ render = ->
     unless row
       console.warn "No row available for #{idx}", availableEls
       continue
-    row.style.top = "#{idx * size.dayHeight}px"
-#    console.log "Set top of row #{idx} to #{row.style.top}"
+    renderRow idx, row
     rowEls[idx] = row
 
 #  console.log 'render()',
 #    available: availableEls.length
 #    rendered: Object.keys rows
 #    domRows: container.children.length
+
+# Given a visible range, clean up things that are not visible
+cleanUp = (range) ->
+  for idx, row of rowEls
+    unless idx in range
+      availableEls.push row
+      row.style.top = ''
+      delete rowEls[idx]
+
+# Given an index and row element to reuse, render one single row's contents
+renderRow = (idx, row) ->
+  row.style.top = "#{idx * size.dayHeight}px"
+  return console.warn "incorrect child elements in this row", row unless row.children.length is daysPerRow
+
+  days = model.getDatesByWeek idx
+  for i in [0...daysPerRow]
+    day = row.children[i]
+    m = moment days[i], model.formatStr
+    if m.date() is 1 and m.month() is 0
+#      day.innerHTML = "
+#        <stong>#{m.format 'YYYY'}</stong><br/>
+#        {m.format MMM D}
+#      "
+      day.innerText = m.format 'MMM D, YYYY'
+    else
+      day.innerText = m.format 'MMM D'
+    day.setAttribute 'title', "#{m.format('ddd, MMMM Do YYYY')} (#{m.fromNow()})"
+
+
+
+#    console.log "Set top of row #{idx} to #{row.style.top}"
+
+
 
 
 # Calculate a visible range of rows based on sizing data, scroll position, and window height
@@ -129,11 +158,6 @@ onPause = _.debounce ->
 , 100
 
 
-# ---------------------------------------------------- Calendar Transformations
-
-# Given a week index where 0 is the most recent/current week,
-# Return an array of dates in the format `YYYY-MM-DD`
-getDatesByWeek = (idx) ->
 
 
 

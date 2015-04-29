@@ -8,7 +8,7 @@
  */
 
 (function() {
-  var Size, availableEls, calcVisibleRange, container, dayElsByDate, daysPerRow, getDatesByWeek, init, languidResize, maxDayHeight, model, onPause, onResize, onScroll, previousScrollY, render, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
+  var Size, availableEls, calcVisibleRange, cleanUp, container, dayElsByDate, daysPerRow, init, languidResize, maxDayHeight, model, moment, onPause, onResize, onScroll, previousScrollY, render, renderRow, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ = require('lodash');
@@ -18,6 +18,8 @@
   languidResize = require('common/behaviors/languid-resize');
 
   stylesheet = require('common/behaviors/stylesheet');
+
+  moment = require('moment');
 
   size = null;
 
@@ -42,8 +44,7 @@
     this.dayHeight = Math.min(this.dayWidth, maxDayHeight);
     this.topOffset = container.offsetTop;
     this.cols = daysPerRow;
-    this.rows = Math.ceil(window.innerHeight / this.dayHeight);
-    return console.log(this);
+    return this.rows = Math.ceil(window.innerHeight / this.dayHeight);
   };
 
   init = function() {
@@ -79,14 +80,7 @@
   render = function() {
     var idx, row, visibleRange, _i, _len, _results;
     visibleRange = calcVisibleRange();
-    for (idx in rowEls) {
-      row = rowEls[idx];
-      if (__indexOf.call(visibleRange, idx) < 0) {
-        availableEls.push(row);
-        row.style.top = '';
-        delete rowEls[idx];
-      }
-    }
+    cleanUp(visibleRange);
     _results = [];
     for (_i = 0, _len = visibleRange.length; _i < _len; _i++) {
       idx = visibleRange[_i];
@@ -95,8 +89,45 @@
         console.warn("No row available for " + idx, availableEls);
         continue;
       }
-      row.style.top = "" + (idx * size.dayHeight) + "px";
+      renderRow(idx, row);
       _results.push(rowEls[idx] = row);
+    }
+    return _results;
+  };
+
+  cleanUp = function(range) {
+    var idx, row, _results;
+    _results = [];
+    for (idx in rowEls) {
+      row = rowEls[idx];
+      if (__indexOf.call(range, idx) < 0) {
+        availableEls.push(row);
+        row.style.top = '';
+        _results.push(delete rowEls[idx]);
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  renderRow = function(idx, row) {
+    var day, days, i, m, _i, _results;
+    row.style.top = "" + (idx * size.dayHeight) + "px";
+    if (row.children.length !== daysPerRow) {
+      return console.warn("incorrect child elements in this row", row);
+    }
+    days = model.getDatesByWeek(idx);
+    _results = [];
+    for (i = _i = 0; 0 <= daysPerRow ? _i < daysPerRow : _i > daysPerRow; i = 0 <= daysPerRow ? ++_i : --_i) {
+      day = row.children[i];
+      m = moment(days[i], model.formatStr);
+      if (m.date() === 1 && m.month() === 0) {
+        day.innerText = m.format('MMM D, YYYY');
+      } else {
+        day.innerText = m.format('MMM D');
+      }
+      _results.push(day.setAttribute('title', "" + (m.format('ddd, MMMM Do YYYY')) + " (" + (m.fromNow()) + ")"));
     }
     return _results;
   };
@@ -138,8 +169,6 @@
   onPause = _.debounce(function() {
     return console.log("paused on " + (calcVisibleRange()));
   }, 100);
-
-  getDatesByWeek = function(idx) {};
 
   module.exports = {
     init: init

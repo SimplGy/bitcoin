@@ -1,12 +1,14 @@
 (function() {
-  var Model, genesis, genesisMoment, m, moment, monthNames,
+  var Model, formatStr, genesis, genesisMoment, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
 
   moment = require('moment');
 
   genesis = 2009;
 
-  genesisMoment = moment("" + genesis + "-01-01", 'YYYY-MM-MM');
+  formatStr = 'YYYY-MM-DD';
+
+  genesisMoment = moment("" + genesis + "-01-01", formatStr);
 
   monthNames = {
     '01': 'Jan',
@@ -27,11 +29,11 @@
     this.buildEmptyStructure();
     this.cacheLoad();
     this.cacheSave();
-    console.log('calendar.model', this);
     return void 0;
   };
 
   Model.prototype = {
+    formatStr: formatStr,
     buildEmptyStructure: function() {
       var curMonth, curYear, dateKey, day, endingDay, endingMonth, month, now, year, _i, _results;
       now = new Date();
@@ -99,13 +101,18 @@
         _results.push(typeof localStorage !== "undefined" && localStorage !== null ? localStorage[key] = JSON.stringify(val) : void 0);
       }
       return _results;
+    },
+    getDatesByWeek: function(idx) {
+      var dates, i, week, _i;
+      dates = [];
+      week = moment().subtract(idx, 'weeks');
+      for (i = _i = 0; _i <= 6; i = ++_i) {
+        dates.push(week.day(i).format(formatStr));
+      }
+      return dates;
     }
   };
 
-  m = new Model();
-
-  window._cal = m;
-
-  module.exports = m;
+  module.exports = new Model();
 
 }).call(this);

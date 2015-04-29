@@ -11,7 +11,9 @@
   "author": "@simplgy",
   "license": "MIT",
   "scripts": {
-    "test": "gulp -- prepare-tests && jasmine-node dist/test.js --matchall"
+    "test": "npm run test-watch",
+    "test-once":  "gulp -- prepare-tests && jasmine-node dist/test.js --matchall",
+    "test-watch": "gulp -- prepare-tests-watch & jasmine-node dist/test.js --matchall --autotest"
   },
   "devDependencies": {
     "browser-sync": "^2.6.4",

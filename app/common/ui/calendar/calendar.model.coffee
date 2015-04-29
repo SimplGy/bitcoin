@@ -13,7 +13,8 @@ moment      = require 'moment'
 
 # Genesis was 3 Jan 2009. Round to 1 Jan and assume there are no blocks before that.
 genesis = 2009
-genesisMoment = moment("#{genesis}-01-01", 'YYYY-MM-MM')
+formatStr = 'YYYY-MM-DD'
+genesisMoment = moment "#{genesis}-01-01", formatStr
 monthNames = {
   '01': 'Jan'
   '02': 'Feb'
@@ -35,11 +36,13 @@ Model = ->
   @buildEmptyStructure()
   @cacheLoad()
   @cacheSave()
-  console.log 'calendar.model', @
+#  console.log 'calendar.model', @
   return undefined
 
 
 Model.prototype =
+
+  formatStr: formatStr
 
   # Build empty placeholders for all dates from now until the beginning of bitcoin
   # Adds the month name for convenience
@@ -83,6 +86,20 @@ Model.prototype =
 
 
 
+  # ---------------------------------------------------- Calendar Transformations
+
+  # Given a week index where 0 is the most recent/current week,
+  # Return an array of dates in the format `YYYY-MM-DD`
+  getDatesByWeek: (idx) ->
+    dates = []
+    week = moment().subtract idx, 'weeks'
+#    console.log "target week", week.format formatStr
+    for i in [0..6]
+      dates.push week.day(i).format formatStr
+    dates
+
+
+
 # Given a month in the format "2015-04", pull it out of localstorage.
 # TODO: request the data for the month if it's not in there.
 #getMonth = (str) ->
@@ -90,9 +107,9 @@ Model.prototype =
 
 
 
-m = new Model()
-window._cal = m # debugging
-module.exports = m
+#m = new Model()
+#window._cal = m # debugging
+module.exports = new Model()
 
 
 
