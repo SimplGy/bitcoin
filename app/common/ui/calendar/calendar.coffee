@@ -129,9 +129,11 @@ onPause = _.debounce ->
 , 100
 
 
-#  container = d3.select("body").append('ol').attr 'class', 'calendar'
-#  els = container.selectAll('li').data(d3.entries(model), (d) -> d.key) # blocks are uniquely identified by their `hash` property
-#  els.enter().append('li').text (d) -> d.key
+# ---------------------------------------------------- Calendar Transformations
+
+# Given a week index where 0 is the most recent/current week,
+# Return an array of dates in the format `YYYY-MM-DD`
+getDatesByWeek = (idx) ->
 
 
 

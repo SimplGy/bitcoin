@@ -10,11 +10,15 @@ header {
   header .title {
     font-size: 18px; }
   header .bitcoin-tip {
-    color: #66c2a4;
+    color: #50c800;
     float: right; }
   header a {
+    display: inline-block;
+    height: 100%;
     color: #999999;
     text-decoration: none;
-    margin-right: 10px; }
+    margin-right: 10px;
+    padding: 0 3px; }
   header a:hover {
-    text-decoration: underline; }
+    text-decoration: underline;
+    background: rgba(0, 0, 0, 0.02); }

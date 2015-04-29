@@ -29,6 +29,9 @@ To run the project in development mode:
 
     gulp
 
+To run tests:
+
+    npm test
 
 
 

@@ -1,15 +1,18 @@
-var config, del, gulp, task;
+(function() {
+  var config, del, gulp, task;
 
-gulp = require('gulp');
+  gulp = require('gulp');
 
-del = require('del');
+  del = require('del');
 
-config = require('../config');
+  config = require('../config');
 
-task = function(cb) {
-  return del([config.dist], cb);
-};
+  task = function(cb) {
+    return del([config.dist], cb);
+  };
 
-gulp.task('clean', task);
+  gulp.task('clean', task);
 
-module.exports = task;
+  module.exports = task;
+
+}).call(this);

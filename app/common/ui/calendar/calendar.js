@@ -8,7 +8,7 @@
  */
 
 (function() {
-  var Size, availableEls, calcVisibleRange, container, dayElsByDate, daysPerRow, init, languidResize, maxDayHeight, model, onPause, onResize, onScroll, previousScrollY, render, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
+  var Size, availableEls, calcVisibleRange, container, dayElsByDate, daysPerRow, getDatesByWeek, init, languidResize, maxDayHeight, model, onPause, onResize, onScroll, previousScrollY, render, resetElements, rowEls, rowElsByDate, size, stylesheet, _,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ = require('lodash');
@@ -138,6 +138,8 @@
   onPause = _.debounce(function() {
     return console.log("paused on " + (calcVisibleRange()));
   }, 100);
+
+  getDatesByWeek = function(idx) {};
 
   module.exports = {
     init: init
