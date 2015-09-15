@@ -12,8 +12,8 @@
   "license": "MIT",
   "scripts": {
     "test": "npm run test-watch",
-    "test-once":  "gulp -- prepare-tests && jasmine-node dist/test.js --matchall",
-    "test-watch": "gulp -- prepare-tests-watch & jasmine-node dist/test.js --matchall --autotest"
+    "test-once": "gulp -- prepare-tests && jasmine-node dist/test.js --matchall",
+    "test-watch": "gulp -- prepare-tests-watch & gulp -- prepare-tests && jasmine-node dist/test.js --matchall --autotest --verbose"
   },
   "devDependencies": {
     "browser-sync": "^2.6.4",
@@ -40,6 +40,7 @@
     "watchify": "^3.1.1"
   },
   "dependencies": {
+    "baconjs": "^0.7.53",
     "moment": "^2.10.2"
   }
 }

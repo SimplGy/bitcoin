@@ -1,8 +1,10 @@
 (function() {
-  var Model, formatStr, genesis, genesisMoment, moment, monthNames,
+  var Model, blockStream, formatStr, genesis, genesisMoment, moment, monthNames,
     __hasProp = {}.hasOwnProperty;
 
   moment = require('moment');
+
+  blockStream = require('common/streams/blocks');
 
   genesis = 2009;
 
@@ -29,6 +31,9 @@
     this.buildEmptyStructure();
     this.cacheLoad();
     this.cacheSave();
+    blockStream.property.onValue(function(blocks) {
+      return console.log("" + blocks.length + " blocks loaded");
+    });
     return void 0;
   };
 

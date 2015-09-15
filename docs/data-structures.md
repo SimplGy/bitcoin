@@ -21,6 +21,22 @@ This means there are:
 
 For the forseeable future there will be less than 1,000,000 blocks.
 
+## System Objects
+
+```js
+// Blocks
+// Sparse array from [0-blockHeight]
+// Caches results anytime it gets them, and looks first to cached results when fulfilling requests
+// Tries to estimate which page of blocks to request by day, there is a small learning algo to adjust the
+// Prefer to request block sets that fit together nicely. This means it might request more for a certain request so that it can build up a continuous set of blocks in cache.
+Blocks.get 42                                 // block height
+Blocks.get 'lkjsdlkj3lk3j2l34kj23l4k23lk43'   // block hash
+Blocks.get '2015-04-29'                       // List of the blocks for today
+Blocks.onUpdate (blocks) ->                   // New data arrived or was changed
+Days.
+
+```
+
 
 ## Calendar
 

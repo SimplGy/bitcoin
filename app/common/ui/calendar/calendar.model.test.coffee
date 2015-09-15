@@ -3,8 +3,6 @@ calendar = require './calendar.model'
 moment   = require 'moment'
 
 
-console.log 'testing common/ui/calendar.model'
-
 describe "common/ui/calendar.model", ->
 
   it 'exists', ->

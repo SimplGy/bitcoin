@@ -7,8 +7,6 @@
 
   moment = require('moment');
 
-  console.log('testing common/ui/calendar.model');
-
   describe("common/ui/calendar.model", function() {
     it('exists', function() {
       return expect(calendar).toBeDefined();

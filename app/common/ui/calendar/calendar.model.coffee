@@ -1,4 +1,5 @@
 moment      = require 'moment'
+blockStream = require 'common/streams/blocks'
 
 # A data model that matches the needs of the calendar exactly
 # Stores data per day in this format:
@@ -37,6 +38,7 @@ Model = ->
   @cacheLoad()
   @cacheSave()
 #  console.log 'calendar.model', @
+  blockStream.property.onValue (blocks) -> console.log "#{blocks.length} blocks loaded"
   return undefined
 
 
