@@ -1,0 +1,24 @@
+header {
+  font-size: 15px;
+  line-height: 40px;
+  height: 40px;
+  padding: 0 15px;
+  color: #ddd;
+  background: #333;
+  border-bottom: #e5e5e5;
+  margin-bottom: 2px; }
+  header .title {
+    font-size: 18px; }
+  header .bitcoin-tip {
+    color: #f1f999;
+    float: right; }
+  header a {
+    display: inline-block;
+    height: 100%;
+    color: #999999;
+    text-decoration: none;
+    margin-right: 10px;
+    padding: 0 3px; }
+  header a:hover {
+    text-decoration: underline;
+    background: rgba(0, 0, 0, 0.02); }
